@@ -68,6 +68,38 @@ class CliTests(unittest.TestCase):
             self.assertTrue(out.exists())
             self.assertTrue(md.exists())
             self.assertTrue(html.exists())
+            simple_md = Path(tmp) / "simple.md"
+            simple_html = Path(tmp) / "simple.html"
+            simple_stdout = io.StringIO()
+            with contextlib.redirect_stdout(simple_stdout):
+                simple_code = main(
+                    [
+                        "scan",
+                        "--agents",
+                        paths["agents"],
+                        "--mcp",
+                        paths["mcp"],
+                        "--identity",
+                        paths["identity"],
+                        "--data-catalog",
+                        paths["data_catalog"],
+                        "--approval-policy",
+                        paths["approval_policy"],
+                        "--events",
+                        paths["events"],
+                        "--out",
+                        str(Path(tmp) / "simple.json"),
+                        "--markdown",
+                        str(simple_md),
+                        "--html",
+                        str(simple_html),
+                        "--simple",
+                    ]
+                )
+            self.assertEqual(simple_code, 0)
+            self.assertIn("(simple)", simple_stdout.getvalue())
+            self.assertIn("AgentGuard Graph Simple Report", simple_md.read_text(encoding="utf-8"))
+            self.assertIn("simple-mode", simple_html.read_text(encoding="utf-8"))
             report = json.loads(out.read_text(encoding="utf-8"))
             self.assertEqual(report["evidence_manifest"]["status"], "not_provided")
             path_id = report["attack_paths"][0]["id"]
@@ -788,6 +820,17 @@ weather = PydanticAgent("openai:gpt-5", tools=[weather_tool])
             self.assertTrue(
                 any(agent["runtime"] == "microsoft-365-copilot" for agent in report["inventory"]["agents"])
             )
+            self.assertEqual(main(["demo", "--simple"]), 0)
+            self.assertIn(
+                "AgentGuard Graph Simple Report",
+                (ROOT / "outputs" / "demo" / "agent-risk.md").read_text(encoding="utf-8"),
+            )
+            self.assertIn(
+                "simple-mode",
+                (ROOT / "outputs" / "demo" / "agent-risk.html").read_text(encoding="utf-8"),
+            )
+            simple_report = json.loads((ROOT / "outputs" / "demo" / "agent-risk.json").read_text(encoding="utf-8"))
+            self.assertGreaterEqual(simple_report["summary"]["agents"], 6)
         finally:
             os.chdir(old_cwd)
 

@@ -25,6 +25,7 @@ The output is designed for security review, not runtime enforcement. Missing evi
 - Agent Security Graph built from local evidence.
 - Prioritized attack paths and finding severity.
 - JSON, Markdown, and self-contained HTML reports.
+- Simple mode for beginner-friendly Markdown/HTML reports that keep the JSON complete.
 - Evidence manifest attestation and drift tracking.
 - Secret-like evidence detection before handoff.
 - Offline control analysis for AI execution-layer safeguards.
@@ -49,7 +50,7 @@ pip install -e .
 Run the bundled demo:
 
 ```bash
-agentguard-graph demo
+agentguard-graph demo --simple
 ```
 
 Open the generated report:
@@ -64,8 +65,10 @@ Review your own project:
 agentguard-graph collect --project-dir . --out agent-evidence/
 agentguard-graph doctor --evidence-dir agent-evidence/ --write-plan agent-evidence/collection-plan.json
 agentguard-graph validate --json --evidence-dir agent-evidence/
-agentguard-graph scan --evidence-dir agent-evidence/ --out outputs/my-agent/agent-risk.json --markdown outputs/my-agent/agent-risk.md --html outputs/my-agent/agent-risk.html
+agentguard-graph scan --simple --evidence-dir agent-evidence/ --out outputs/my-agent/agent-risk.json --markdown outputs/my-agent/agent-risk.md --html outputs/my-agent/agent-risk.html
 ```
+
+`--simple` makes the Markdown and HTML reports start with what matters, what to fix first, what evidence to request, and the top risks. The JSON report remains complete, and omitting `--simple` gives the full reviewer report.
 
 You can also run from source without installing:
 

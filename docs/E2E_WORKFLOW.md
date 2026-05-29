@@ -67,11 +67,14 @@ agentguard-graph doctor --evidence-dir agent-evidence/
 agentguard-graph validate --json --evidence-dir agent-evidence/
 
 agentguard-graph scan \
+  --simple \
   --evidence-dir agent-evidence/ \
   --out outputs/coding-agent/agent-risk.json \
   --markdown outputs/coding-agent/agent-risk.md \
   --html outputs/coding-agent/agent-risk.html
 ```
+
+Use `--simple` for the first pass with a new team. It keeps the JSON report complete but makes Markdown and HTML focus on what matters, what to fix first, and what evidence to request. Omit it when reviewers want all IAM, policy, privacy, runtime, scoring, and raw-evidence details expanded.
 
 ## 3. Collect From Local Sources
 
@@ -708,6 +711,7 @@ Errors exit `2`. Warnings indicate missing or weak evidence; scan can still run 
 
 ```bash
 agentguard-graph scan \
+  --simple \
   --agents agent-evidence/agentguard.json \
   --mcp agent-evidence/mcp-servers.json \
   --identity agent-evidence/identity.json \
@@ -719,7 +723,7 @@ agentguard-graph scan \
   --html outputs/my-agent/agent-risk.html
 ```
 
-JSON is the stable machine-readable report. Markdown is for review. HTML is a self-contained local visualization.
+JSON is the stable machine-readable report. Markdown is for review. HTML is a self-contained local visualization. `--simple` only changes Markdown and HTML presentation; it does not remove fields from the JSON output.
 
 ## 9. Inventory
 
@@ -782,7 +786,7 @@ The portfolio output scans recursively by default. It skips JSON files that are 
 ## 13. Demo
 
 ```bash
-agentguard-graph demo
+agentguard-graph demo --simple
 ```
 
 Outputs:
@@ -795,3 +799,5 @@ outputs/demo/inventory.json
 ```
 
 The demo uses the `demo-enterprise` pack. It includes support, coding, release, finance, knowledge-assistant, and Microsoft 365 Copilot sales agents with static paths, allowed events, blocked events, approval events, memory gaps, delegated Microsoft 365 visibility gaps, and IAM visibility gaps.
+
+Run `agentguard-graph demo` without `--simple` when you want the full reviewer report.

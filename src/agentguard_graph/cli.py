@@ -161,18 +161,19 @@ def cmd_scan(args: argparse.Namespace) -> int:
         return 2
     manifest_status = validate_evidence_manifest(getattr(args, "evidence_dir", None), _scan_manifest_files(args))
     report = _build_report(evidence, evidence_manifest=manifest_status)
+    simple = bool(getattr(args, "simple", False))
     if args.out:
         write_json_report(report, args.out)
     if args.markdown:
-        write_markdown_report(report, args.markdown)
+        write_markdown_report(report, args.markdown, simple=simple)
     if args.html:
-        write_html_report(report, args.html)
+        write_html_report(report, args.html, simple=simple)
     print(f"wrote report: {args.out}")
     _print_report_summary(report)
     if args.markdown:
-        print(f"wrote markdown: {args.markdown}")
+        print(f"wrote markdown: {args.markdown}" + (" (simple)" if simple else ""))
     if args.html:
-        print(f"wrote html: {args.html}")
+        print(f"wrote html: {args.html}" + (" (simple)" if simple else ""))
     return 0
 
 
@@ -1527,6 +1528,7 @@ def cmd_demo(args: argparse.Namespace) -> int:
             out=str(output_dir / "agent-risk.json"),
             markdown=str(output_dir / "agent-risk.md"),
             html=str(output_dir / "agent-risk.html"),
+            simple=bool(getattr(args, "simple", False)),
         )
         code = cmd_scan(scan_args)
         if code != 0:
@@ -1554,6 +1556,11 @@ def build_parser() -> argparse.ArgumentParser:
     scan.add_argument("--out", required=True, help="JSON report output path")
     scan.add_argument("--markdown", help="Markdown report output path")
     scan.add_argument("--html", help="Self-contained HTML report output path")
+    scan.add_argument(
+        "--simple",
+        action="store_true",
+        help="Use beginner-friendly Markdown/HTML reports while keeping the JSON report complete.",
+    )
     scan.set_defaults(func=cmd_scan)
 
     inventory = subparsers.add_parser("inventory", help="Write inventory and graph facts without attack-path scoring.")
@@ -1709,6 +1716,11 @@ def build_parser() -> argparse.ArgumentParser:
     collect.set_defaults(func=cmd_collect)
 
     demo = subparsers.add_parser("demo", help="Run checked-in sample evidence and write outputs/demo.")
+    demo.add_argument(
+        "--simple",
+        action="store_true",
+        help="Use beginner-friendly Markdown/HTML demo reports while keeping the JSON report complete.",
+    )
     demo.set_defaults(func=cmd_demo)
     return parser
 

@@ -234,7 +234,7 @@ def _finding_card(finding: dict[str, Any], selected: bool = False) -> str:
     )
 
 
-def render_html(report: dict[str, Any]) -> str:
+def render_html(report: dict[str, Any], *, simple: bool = False) -> str:
     summary = report.get("summary", {})
     graph = report.get("graph", {})
     findings = sorted(report.get("findings", []), key=lambda item: (-int(item.get("score", 0)), item.get("id", "")))
@@ -332,6 +332,8 @@ def render_html(report: dict[str, Any]) -> str:
     )
     review_actions = _list_html(review_decision.get("required_actions", []), "No required actions recorded.")
     review_reasons = _list_html(review_decision.get("reasons", []), "No decision evidence recorded.")
+    body_class = ' class="simple-mode"' if simple else ""
+    mode_badge = '<span class="mode-badge">Simple mode</span>' if simple else ""
     brief_items = "".join(
         [
             '<div class="topline-item">'
@@ -416,6 +418,15 @@ def render_html(report: dict[str, Any]) -> str:
             for item in evidence_guide.get("recommended_next_inputs", [])
         ],
         "No recommended next inputs recorded.",
+    )
+    simple_risks = _list_html(
+        [
+            f"{finding.get('tier', 'informational')}: {finding.get('title', 'unknown')} "
+            f"(score {(finding.get('scoring') or {}).get('score', finding.get('score', 'unknown'))}, "
+            f"owner {(finding.get('operational_context') or {}).get('owner', 'unknown')})"
+            for finding in findings[:5]
+        ],
+        "No attack-path findings produced.",
     )
     evidence_manifest = report.get("evidence_manifest") or {}
     manifest_summary = evidence_manifest.get("summary") or {}
@@ -606,6 +617,35 @@ def render_html(report: dict[str, Any]) -> str:
     environments = sorted({str((finding.get("operational_context") or {}).get("environment", "")) for finding in findings if (finding.get("operational_context") or {}).get("environment")})
     owner_options = "".join(f'<option value="{h(owner.lower())}">{h(owner)}</option>' for owner in owners)
     environment_options = "".join(f'<option value="{h(environment.lower())}">{h(environment)}</option>' for environment in environments)
+    simple_overview = ""
+    if simple:
+        simple_overview = f"""
+<section class="simple-overview" aria-label="simple report overview">
+  <div class="simple-card simple-card-primary">
+    <span class="brief-label">What matters</span>
+    <h2>{h(review_decision.get("label", review_decision.get("decision", "Unknown")))}</h2>
+    <p>{h(review_decision.get("reason", "No decision reason recorded."))}</p>
+    <ul>
+      <li>{h(summary.get("urgent", 0))} urgent and {h(summary.get("high", 0))} high findings.</li>
+      <li>{h(summary.get("visibility_gaps", 0))} visibility gaps need evidence.</li>
+      <li>{h(summary.get("tools_missing_required_controls", 0))} tool/control gaps need review.</li>
+    </ul>
+  </div>
+  <div class="simple-card">
+    <span class="brief-label">Fix first</span>
+    <ul>{review_actions}</ul>
+  </div>
+  <div class="simple-card">
+    <span class="brief-label">Evidence to request</span>
+    <ul>{guide_missing}</ul>
+  </div>
+  <div class="simple-card">
+    <span class="brief-label">Top risks</span>
+    <ul>{simple_risks}</ul>
+  </div>
+</section>
+<p class="simple-note">Simple mode keeps the full JSON report but hides advanced scoring and raw-evidence detail in the HTML view. Re-run without <code>--simple</code> for the full reviewer interface.</p>
+"""
 
     return f"""<!doctype html>
 <html lang="en">
@@ -706,6 +746,68 @@ p {{ line-height: 1.45; }}
 .decision-chip h2 {{ margin: 0; font-size: 13px; color: #ffffff; }}
 .decision-chip p {{
   display: none;
+}}
+.mode-badge {{
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: #d8fff8;
+  background: rgba(20, 126, 126, 0.28);
+  font-size: 11px;
+  font-weight: 750;
+}}
+.simple-overview {{
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #eaf1f8;
+  border-bottom: 1px solid var(--line);
+}}
+.simple-card {{
+  min-height: 132px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: var(--shadow-soft);
+}}
+.simple-card-primary {{
+  border-color: #9fd6d3;
+  box-shadow: inset 4px 0 0 var(--accent), var(--shadow-soft);
+}}
+.simple-card h2 {{ margin: 5px 0 7px; font-size: 16px; }}
+.simple-card p {{ margin: 0 0 8px; color: var(--muted-strong); }}
+.simple-card ul {{ margin: 8px 0 0; padding-left: 18px; }}
+.simple-card li {{ margin: 5px 0; line-height: 1.35; }}
+.simple-note {{
+  margin: 0;
+  padding: 8px 18px;
+  color: var(--muted-strong);
+  background: #f8fafc;
+  border-bottom: 1px solid var(--line);
+}}
+.simple-mode .advanced-only {{
+  display: none;
+}}
+.simple-mode #remediation-plan.secondary-panel > summary::after,
+.simple-mode #evidence-guide.secondary-panel > summary::after,
+.simple-mode #policy-analysis.secondary-panel > summary::after,
+.simple-mode #offline-control-analysis.secondary-panel > summary::after,
+.simple-mode #privacy-analysis.secondary-panel > summary::after,
+.simple-mode #iam-analysis.secondary-panel > summary::after,
+.simple-mode #runtime-reconstruction.secondary-panel > summary::after {{
+  content: "advanced";
+  margin-left: 8px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--panel-strong);
+  font-size: 10px;
+  text-transform: uppercase;
 }}
 .topline {{
   display: grid;
@@ -1218,6 +1320,7 @@ pre {{
   .decision-chip {{ min-width: 0; max-width: none; margin-top: 10px; }}
   .metrics {{ grid-template-columns: repeat(2, minmax(112px, 1fr)); }}
   .topline {{ grid-template-columns: 1fr; }}
+  .simple-overview {{ grid-template-columns: 1fr; }}
   .guide-grid {{ grid-template-columns: 1fr; }}
   .layout {{ grid-template-columns: 1fr; }}
   .filters {{ grid-template-columns: 1fr; }}
@@ -1225,12 +1328,12 @@ pre {{
 }}
 </style>
 </head>
-<body>
+<body{body_class}>
 <header>
   <div class="header-top">
     <div>
       <p class="eyebrow">Security operations report</p>
-      <h1>AgentGuard Graph Risk Report</h1>
+      <h1>AgentGuard Graph Risk Report {mode_badge}</h1>
       <p class="subtitle">Agent risk, controls, and evidence gaps.</p>
     </div>
     <div class="decision-chip" aria-label="review decision">
@@ -1242,6 +1345,7 @@ pre {{
   <section class="metrics" aria-label="report summary">{metrics}</section>
   <section class="topline" aria-label="Review brief">{brief_items}</section>
 </header>
+{simple_overview}
 <div class="layout">
   <main class="risk-view">
     <div class="pane-title">
@@ -1426,7 +1530,7 @@ pre {{
     <h3>Validation steps</h3>
     <ul id="validation-steps-list">{validation_steps}</ul>
     </details>
-    <details class="detail-group">
+    <details class="detail-group advanced-only">
       <summary>Scoring and raw evidence</summary>
     <h3>Scoring dimensions</h3>
     <ul id="dimensions-list">{dimensions or "<li>No scoring dimensions recorded.</li>"}</ul>
@@ -1442,7 +1546,7 @@ pre {{
   </section>
 </div>
 <section class="secondary" aria-label="supporting material">
-  <details id="remediation-plan" class="secondary-panel" open>
+  <details id="remediation-plan" class="secondary-panel"{'' if simple else ' open'}>
     <summary>Owner-Routed Remediation Plan</summary>
     <div class="topline">
       <div class="topline-item"><span class="brief-label">Actions</span><strong>{h(remediation_summary.get("actions", 0))}</strong></div>
@@ -1916,10 +2020,10 @@ pre {{
 """
 
 
-def write_html_report(report: dict[str, Any], path: str | Path) -> None:
+def write_html_report(report: dict[str, Any], path: str | Path, *, simple: bool = False) -> None:
     output_path = Path(path)
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(render_html(report), encoding="utf-8")
+        output_path.write_text(render_html(report, simple=simple), encoding="utf-8")
     except OSError as exc:
         raise EvidenceLoadError(f"{output_path}: cannot write HTML report: {exc}") from exc

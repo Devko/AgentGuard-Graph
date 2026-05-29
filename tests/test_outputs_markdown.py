@@ -44,6 +44,17 @@ class MarkdownOutputTests(unittest.TestCase):
             write_markdown_report(load_report("support-agent"), path)
             self.assertIn("Visibility gaps", path.read_text(encoding="utf-8"))
 
+    def test_simple_markdown_hides_advanced_sections(self):
+        markdown = render_markdown(load_report("support-agent"), simple=True)
+        self.assertIn("# AgentGuard Graph Simple Report", markdown)
+        self.assertIn("## What matters", markdown)
+        self.assertIn("## Fix first", markdown)
+        self.assertIn("## Evidence to request", markdown)
+        self.assertIn("## Top risks", markdown)
+        self.assertIn("Run the same scan without `--simple`", markdown)
+        self.assertNotIn("Policy evaluation evidence", markdown)
+        self.assertNotIn("Scoring dimensions", markdown)
+
     def test_markdown_empty_report_and_runtime_observations(self):
         empty = {
             "summary": {},

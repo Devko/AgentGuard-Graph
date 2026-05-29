@@ -47,6 +47,19 @@ class HtmlOutputTests(unittest.TestCase):
             self.assertNotIn("https://", html)
             self.assertNotIn("http://", html)
 
+    def test_simple_html_adds_beginner_overview_and_hides_raw_scoring(self):
+        rendered = render_html(load_report("support-agent"), simple=True)
+        self.assertIn('class="simple-mode"', rendered)
+        self.assertIn("Simple mode", rendered)
+        self.assertIn('class="simple-overview"', rendered)
+        self.assertIn("What matters", rendered)
+        self.assertIn("Fix first", rendered)
+        self.assertIn("Evidence to request", rendered)
+        self.assertIn("Re-run without <code>--simple</code>", rendered)
+        self.assertIn('class="detail-group advanced-only"', rendered)
+        self.assertIn("advanced", rendered)
+        self.assertNotIn('id="remediation-plan" class="secondary-panel" open', rendered)
+
     def test_html_has_professional_report_controls_and_next_evidence(self):
         rendered = render_html(load_report("support-agent"))
         for expected in [

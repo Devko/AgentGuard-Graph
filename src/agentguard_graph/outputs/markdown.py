@@ -19,7 +19,9 @@ def _more_items_message(hidden_count: int, item_label: str) -> str:
     return f"{hidden_count} more {item_label}{suffix} not shown."
 
 
-def render_markdown(report: dict[str, Any]) -> str:
+def render_markdown(report: dict[str, Any], *, simple: bool = False) -> str:
+    if simple:
+        return render_simple_markdown(report)
     summary = report.get("summary", {})
     lines: list[str] = ["# AgentGuard Graph Report", "", "## Summary", ""]
     lines.extend(
@@ -618,10 +620,125 @@ def render_markdown(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def write_markdown_report(report: dict[str, Any], path: str | Path) -> None:
+def render_simple_markdown(report: dict[str, Any]) -> str:
+    summary = report.get("summary", {})
+    decision = report.get("review_decision", {})
+    brief = report.get("review_brief", {})
+    primary_risk = brief.get("primary_risk") or {}
+    findings = report.get("findings", [])
+    evidence_guide = report.get("evidence_guide") or {}
+    remediation_plan = report.get("remediation_plan") or {}
+    manifest = report.get("evidence_manifest") or {}
+    manifest_summary = manifest.get("summary") or {}
+
+    lines: list[str] = [
+        "# AgentGuard Graph Simple Report",
+        "",
+        "A reviewer-first summary of the highest-risk paths, first fixes, and missing evidence.",
+        "",
+        "## What matters",
+        "",
+        f"- Review decision: {md_escape(decision.get('label', decision.get('decision', 'unknown')))}",
+        f"- Reason: {md_escape(decision.get('reason', 'No decision reason recorded.'))}",
+        f"- Findings: {md_escape(summary.get('findings', len(findings)))} "
+        f"({md_escape(summary.get('urgent', 0))} urgent, {md_escape(summary.get('high', 0))} high)",
+        f"- Visibility gaps: {md_escape(summary.get('visibility_gaps', 0))}",
+        f"- Missing controls: {md_escape(summary.get('tools_missing_required_controls', 0))}",
+        f"- Evidence manifest: {md_escape(manifest.get('status', 'not_provided'))} "
+        f"(changed={md_escape(manifest_summary.get('changed_count', 0))}, "
+        f"missing={md_escape(manifest_summary.get('missing_count', 0))}, "
+        f"unmanifested={md_escape(manifest_summary.get('unmanifested_count', 0))})",
+    ]
+
+    if primary_risk:
+        lines.extend(
+            [
+                "",
+                "## Primary risk",
+                "",
+                f"- {md_escape(primary_risk.get('title', 'unknown'))}",
+                f"- Tier: {md_escape(primary_risk.get('tier', 'unknown'))}; "
+                f"score: {md_escape(primary_risk.get('score', 'unknown'))}; "
+                f"state: {md_escape(primary_risk.get('path_state', 'unknown'))}",
+                f"- Owner: {md_escape(primary_risk.get('owner') or 'unknown')}; "
+                f"environment: {md_escape(primary_risk.get('environment') or 'unknown')}",
+            ]
+        )
+
+    lines.extend(["", "## Fix first", ""])
+    actions = list(brief.get("top_actions") or decision.get("required_actions") or [])
+    actions.extend(
+        [
+            str(action.get("reason", ""))
+            for action in remediation_plan.get("actions", [])[:5]
+            if isinstance(action, dict) and action.get("reason")
+        ]
+    )
+    for action in _unique_nonempty(actions)[:6] or ["No priority actions recorded."]:
+        lines.append(f"- {md_escape(action)}")
+
+    lines.extend(["", "## Evidence to request", ""])
+    evidence_items: list[str] = []
+    for gap in brief.get("top_visibility_gaps", [])[:5]:
+        if isinstance(gap, dict):
+            evidence_items.append(
+                f"{gap.get('priority', 'medium_gap')}: {gap.get('type', 'unknown')} "
+                f"on {gap.get('target', 'unknown')} - {gap.get('reason', '')}"
+            )
+    for item in evidence_guide.get("top_missing_evidence", [])[:5]:
+        evidence_items.append(
+            f"{item.get('priority', 'medium_gap')}: {item.get('requested_evidence') or item.get('type', 'unknown')} "
+            f"for {item.get('target', 'unknown')}"
+        )
+    for item in _unique_nonempty(evidence_items)[:6] or ["No missing evidence requests recorded."]:
+        lines.append(f"- {md_escape(item)}")
+
+    lines.extend(["", "## Top risks", ""])
+    ranked_findings = sorted(findings, key=_finding_score, reverse=True)
+    for finding in ranked_findings[:5] or [{"title": "No attack-path findings produced.", "tier": "informational", "score": 0}]:
+        context = finding.get("operational_context", {}) if isinstance(finding, dict) else {}
+        score = (finding.get("scoring") or {}).get("score", finding.get("score", "unknown")) if isinstance(finding, dict) else "unknown"
+        lines.append(
+            f"- {md_escape(finding.get('tier', 'informational'))}: "
+            f"{md_escape(finding.get('title', 'unknown'))} "
+            f"(score {md_escape(score)}, owner {md_escape(context.get('owner', 'unknown'))})"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Need more detail?",
+            "",
+            "Run the same scan without `--simple` to generate the full reviewer report with IAM, policy, privacy, runtime, scoring, and raw evidence sections.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _unique_nonempty(values: list[Any]) -> list[str]:
+    result: list[str] = []
+    for value in values:
+        text = str(value).strip()
+        if text and text not in result:
+            result.append(text)
+    return result
+
+
+def _finding_score(finding: Any) -> int:
+    if not isinstance(finding, dict):
+        return 0
+    scoring = finding.get("scoring") if isinstance(finding.get("scoring"), dict) else {}
+    try:
+        return int(scoring.get("score", finding.get("score", 0)) or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def write_markdown_report(report: dict[str, Any], path: str | Path, *, simple: bool = False) -> None:
     output_path = Path(path)
     try:
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(render_markdown(report), encoding="utf-8")
+        output_path.write_text(render_markdown(report, simple=simple), encoding="utf-8")
     except OSError as exc:
         raise EvidenceLoadError(f"{output_path}: cannot write Markdown report: {exc}") from exc

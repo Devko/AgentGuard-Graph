@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added `--simple` for `scan` and `demo` so first-time users can get beginner-friendly Markdown/HTML reports while keeping JSON output complete.
 - Added `agentguard-graph compare` for saved JSON reports.
 - Added direct evidence pack directory inputs to `agentguard-graph compare`.
 - Added JSON and Markdown comparison outputs with new, resolved, improved, regressed, changed, and unchanged finding classifications.
