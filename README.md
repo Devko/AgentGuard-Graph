@@ -32,6 +32,12 @@ The output is designed for security review, not runtime enforcement. Missing evi
 - IAM, policy, privacy, and runtime reconstruction analysis.
 - Report comparison and portfolio rollups across many agents.
 
+## Screenshot
+
+![AgentGuard Graph risk report dashboard](docs/assets/agentguard-risk-report.png)
+
+The demo HTML report is self-contained and rendered from local evidence only.
+
 ## Quick Start
 
 Install from a checkout:
