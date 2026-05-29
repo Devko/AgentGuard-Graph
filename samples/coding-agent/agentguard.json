@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "agents": [
+    {
+      "id": "coding-agent",
+      "name": "Coding Agent",
+      "owner": "developer-platform",
+      "runtime": "claude-code-like",
+      "environment": "production",
+      "autonomy": "approval_required",
+      "input_sources": ["pull_request_comment", "repository_content"],
+      "tools": ["shell.run", "github.create_pr", "filesystem.read"],
+      "identities": ["github:code-agent"],
+      "memory": [],
+      "approval_policy": "coding-agent-policy",
+      "labels": {
+        "business_unit": "engineering",
+        "criticality": "high"
+      }
+    }
+  ],
+  "input_sources": [
+    {
+      "id": "pull_request_comment",
+      "trust": "untrusted",
+      "description": "External or semi-trusted pull request comments"
+    },
+    {
+      "id": "repository_content",
+      "trust": "untrusted",
+      "description": "Repository files and instructions from pull requests"
+    }
+  ],
+  "memory_stores": []
+}

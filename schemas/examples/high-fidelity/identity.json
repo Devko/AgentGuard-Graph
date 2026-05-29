@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1",
+  "identities": [
+    {
+      "id": "github:release-app",
+      "type": "github_app",
+      "target_system": "github",
+      "scopes": [],
+      "permissions": [
+        {
+          "resource": "repo:release-service",
+          "actions": ["read", "write"],
+          "data_classes": ["source_code"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "kubernetes:release-runner",
+      "type": "service_account",
+      "target_system": "kubernetes",
+      "scopes": [],
+      "permissions": [
+        {
+          "resource": "namespace:production",
+          "actions": ["create", "update", "delete"],
+          "data_classes": ["production_config"],
+          "confidence": "high"
+        }
+      ]
+    }
+  ]
+}

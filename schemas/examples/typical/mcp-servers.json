@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1",
+  "servers": [
+    {
+      "id": "support-mcp",
+      "name": "Support MCP",
+      "transport": "stdio",
+      "auth": "oauth",
+      "tools": [
+        {
+          "name": "salesforce.get_contact",
+          "description": "Read Salesforce Contact records",
+          "risk_tags": ["sensitive_read"],
+          "target_system": "salesforce"
+        },
+        {
+          "name": "gmail.send_email",
+          "description": "Send email to internal or external recipients",
+          "risk_tags": ["external_message", "data_exfiltration_sink"],
+          "target_system": "google_workspace"
+        }
+      ]
+    }
+  ]
+}

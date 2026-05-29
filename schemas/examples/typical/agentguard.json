@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "agents": [
+    {
+      "id": "support-agent",
+      "name": "Support Agent",
+      "owner": "support-platform",
+      "runtime": "custom-agent-platform",
+      "environment": "production",
+      "autonomy": "autonomous",
+      "input_sources": ["support_ticket"],
+      "tools": ["salesforce.get_contact", "gmail.send_email"],
+      "identities": ["salesforce:support-app", "google:gmail-agent"],
+      "memory": [],
+      "approval_policy": "support-policy",
+      "labels": {
+        "business_unit": "support"
+      }
+    }
+  ],
+  "input_sources": [
+    {
+      "id": "support_ticket",
+      "trust": "untrusted",
+      "description": "Customer support ticket"
+    }
+  ],
+  "memory_stores": []
+}

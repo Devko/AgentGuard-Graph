@@ -1,0 +1,818 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.dev/schemas/findings.schema.json",
+  "title": "AgentGuard Graph findings report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "tool",
+    "summary",
+    "review_decision",
+    "review_brief",
+    "evidence_manifest",
+    "evidence_guide",
+    "remediation_plan",
+    "iam_analysis",
+    "offline_control_analysis",
+    "policy_analysis",
+    "privacy_analysis",
+    "runtime_reconstruction",
+    "inventory",
+    "graph",
+    "findings",
+    "attack_paths",
+    "visibility_gaps"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"const": "agentguard-graph"},
+        "version": {"type": "string"}
+      }
+    },
+    "summary": {"type": "object"},
+    "review_decision": {"type": "object"},
+    "review_brief": {
+      "type": "object",
+      "properties": {
+        "headline": {"type": "string"},
+        "decision": {"type": "string"},
+        "posture": {"type": "string"},
+        "runtime_posture": {"type": "string"},
+        "primary_risk": {"type": "object"},
+        "top_visibility_gaps": {"type": "array"},
+        "top_actions": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "evidence_manifest": {"$ref": "#/$defs/evidence_manifest"},
+    "evidence_guide": {
+      "type": "object",
+      "required": ["audience", "summary", "evidence_sources", "top_missing_evidence", "collection_commands", "security_team_questions", "recommended_next_inputs"],
+      "additionalProperties": true,
+      "properties": {
+        "audience": {"type": "string"},
+        "summary": {"type": "string"},
+        "evidence_sources": {"type": "array"},
+        "top_missing_evidence": {"type": "array"},
+        "collection_commands": {"type": "array", "items": {"type": "string"}},
+        "security_team_questions": {"type": "array", "items": {"type": "string"}},
+        "recommended_next_inputs": {"type": "array"}
+      }
+    },
+    "remediation_plan": {"$ref": "#/$defs/remediation_plan"},
+    "iam_analysis": {
+      "type": "object",
+      "required": ["summary", "binding_coverage", "unused_identities", "unused_permissions", "least_privilege_suggestions"],
+      "additionalProperties": true,
+      "properties": {
+        "summary": {"type": "object"},
+        "binding_coverage": {"type": "array"},
+        "unused_identities": {"type": "array"},
+        "unused_permissions": {"type": "array"},
+        "least_privilege_suggestions": {"type": "array"}
+      }
+    },
+    "offline_control_analysis": {
+      "type": "object",
+      "required": ["summary", "tool_inventory", "generic_tools", "agent_tool_controls", "policy_control_gaps", "prompt_security_boundaries", "prompt_boundary_risks", "roadmap"],
+      "additionalProperties": true,
+      "properties": {
+        "summary": {"$ref": "#/$defs/offline_summary"},
+        "tool_inventory": {"type": "array", "items": {"$ref": "#/$defs/offline_tool_inventory_row"}},
+        "generic_tools": {"type": "array", "items": {"$ref": "#/$defs/offline_tool_inventory_row"}},
+        "agent_tool_controls": {"type": "array", "items": {"$ref": "#/$defs/offline_agent_tool_control_row"}},
+        "policy_control_gaps": {"type": "array", "items": {"$ref": "#/$defs/offline_policy_control_gap"}},
+        "prompt_security_boundaries": {"type": "array", "items": {"$ref": "#/$defs/offline_prompt_security_boundary"}},
+        "prompt_boundary_risks": {"type": "array", "items": {"$ref": "#/$defs/offline_prompt_boundary_risk"}},
+        "roadmap": {"type": "array", "items": {"$ref": "#/$defs/offline_roadmap_item"}}
+      }
+    },
+    "policy_analysis": {
+      "type": "object",
+      "required": ["summary", "engines", "evaluations", "gaps", "rule_risks"],
+      "additionalProperties": true,
+      "properties": {
+        "summary": {"type": "object"},
+        "engines": {"type": "object"},
+        "evaluations": {"type": "array"},
+        "gaps": {"type": "array"},
+        "rule_risks": {"type": "array", "items": {"$ref": "#/$defs/policy_rule_risk"}}
+      }
+    },
+    "privacy_analysis": {
+      "type": "object",
+      "required": ["summary", "data_exposures", "classification_gaps", "memory_retention", "privacy_filters"],
+      "additionalProperties": true,
+      "properties": {
+        "summary": {"type": "object"},
+        "data_exposures": {"type": "array"},
+        "classification_gaps": {"type": "array"},
+        "memory_retention": {"type": "array"},
+        "privacy_filters": {"type": "array"}
+      }
+    },
+    "runtime_reconstruction": {
+      "type": "object",
+      "required": ["summary", "event_quality", "diagnostics", "sessions", "event_derived_paths", "sessionless_events"],
+      "additionalProperties": true,
+      "properties": {
+        "summary": {
+          "type": "object",
+          "required": ["events", "sessions", "event_derived_paths", "sessionless_events", "diagnostics", "clean_events", "low_correlation_events"],
+          "properties": {
+            "events": {"type": "integer", "minimum": 0},
+            "sessions": {"type": "integer", "minimum": 0},
+            "event_derived_paths": {"type": "integer", "minimum": 0},
+            "sessionless_events": {"type": "integer", "minimum": 0},
+            "diagnostics": {"type": "integer", "minimum": 0},
+            "missing_session_id": {"type": "integer", "minimum": 0},
+            "missing_agent": {"type": "integer", "minimum": 0},
+            "missing_tool": {"type": "integer", "minimum": 0},
+            "missing_timestamp": {"type": "integer", "minimum": 0},
+            "invalid_timestamp": {"type": "integer", "minimum": 0},
+            "inconsistent_timestamps": {"type": "integer", "minimum": 0},
+            "clean_events": {"type": "integer", "minimum": 0},
+            "low_correlation_events": {"type": "integer", "minimum": 0}
+          }
+        },
+        "event_quality": {"type": "object"},
+        "diagnostics": {"type": "array"},
+        "sessions": {"type": "array"},
+        "event_derived_paths": {"type": "array"},
+        "sessionless_events": {"type": "array"}
+      }
+    },
+    "inventory": {"type": "object"},
+    "graph": {
+      "type": "object",
+      "required": ["nodes", "edges"],
+      "properties": {
+        "nodes": {"type": "array", "items": {"$ref": "#/$defs/node"}},
+        "edges": {"type": "array", "items": {"$ref": "#/$defs/edge"}}
+      }
+    },
+    "findings": {"type": "array", "items": {"$ref": "#/$defs/finding"}},
+    "attack_paths": {"type": "array", "items": {"$ref": "#/$defs/attack_path"}},
+    "visibility_gaps": {"type": "array"}
+  },
+  "$defs": {
+    "evidence_manifest": {
+      "type": "object",
+      "required": ["status", "path", "summary", "changed", "missing", "unmanifested", "errors"],
+      "additionalProperties": true,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_provided", "missing", "present"]
+        },
+        "path": {"type": "string"},
+        "summary": {
+          "type": "object",
+          "required": ["checked_count", "changed_count", "missing_count", "unmanifested_count"],
+          "properties": {
+            "checked_count": {"type": "integer", "minimum": 0},
+            "changed_count": {"type": "integer", "minimum": 0},
+            "missing_count": {"type": "integer", "minimum": 0},
+            "unmanifested_count": {"type": "integer", "minimum": 0}
+          }
+        },
+        "changed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "fields"],
+            "additionalProperties": true,
+            "properties": {
+              "path": {"type": "string"},
+              "fields": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path"],
+            "additionalProperties": true,
+            "properties": {
+              "path": {"type": "string"},
+              "reason": {"type": "string"}
+            }
+          }
+        },
+        "unmanifested": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path"],
+            "additionalProperties": true,
+            "properties": {
+              "path": {"type": "string"}
+            }
+          }
+        },
+        "errors": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "tier": {"type": "string", "enum": ["urgent", "high", "medium", "low", "informational"]},
+    "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+    "observation_status": {"type": "string", "enum": ["possible_static", "observed_allowed", "observed_blocked"]},
+    "risk_status": {"type": "string", "enum": ["open", "accepted", "acceptance_expired"]},
+    "accepted_risk": {
+      "type": "object",
+      "required": ["status", "accepted", "expired", "expires_at"],
+      "additionalProperties": true,
+      "properties": {
+        "status": {"type": "string", "enum": ["open", "accepted", "expired"]},
+        "accepted": {"type": "boolean"},
+        "expired": {"type": "boolean"},
+        "id": {"type": "string"},
+        "owner": {"type": "string"},
+        "reason": {"type": "string"},
+        "ticket": {"type": "string"},
+        "accepted_at": {"type": "string"},
+        "expires_at": {"type": "string"},
+        "scope": {"type": "object"},
+        "matched_by": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "remediation_plan": {
+      "type": "object",
+      "required": ["summary", "owner_rollups", "system_rollups", "category_rollups", "actions"],
+      "additionalProperties": true,
+      "properties": {
+        "summary": {
+          "type": "object",
+          "required": ["actions", "p1", "p2", "p3", "owners", "systems", "categories", "by_owner", "by_system", "by_category"],
+          "additionalProperties": true,
+          "properties": {
+            "actions": {"type": "integer", "minimum": 0},
+            "p1": {"type": "integer", "minimum": 0},
+            "p2": {"type": "integer", "minimum": 0},
+            "p3": {"type": "integer", "minimum": 0},
+            "owners": {"type": "integer", "minimum": 0},
+            "systems": {"type": "integer", "minimum": 0},
+            "categories": {"type": "integer", "minimum": 0},
+            "by_owner": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+            "by_system": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+            "by_category": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}}
+          }
+        },
+        "owner_rollups": {"type": "array", "items": {"$ref": "#/$defs/remediation_rollup"}},
+        "system_rollups": {"type": "array", "items": {"$ref": "#/$defs/remediation_rollup"}},
+        "category_rollups": {"type": "array", "items": {"$ref": "#/$defs/remediation_rollup"}},
+        "actions": {"type": "array", "items": {"$ref": "#/$defs/remediation_action"}}
+      }
+    },
+    "remediation_rollup": {
+      "type": "object",
+      "required": ["action_count", "p1", "p2", "p3", "action_ids"],
+      "additionalProperties": true,
+      "properties": {
+        "owner": {"type": "string"},
+        "target": {"type": "string"},
+        "category": {"type": "string"},
+        "action_count": {"type": "integer", "minimum": 0},
+        "p1": {"type": "integer", "minimum": 0},
+        "p2": {"type": "integer", "minimum": 0},
+        "p3": {"type": "integer", "minimum": 0},
+        "action_ids": {"$ref": "#/$defs/string_list"}
+      }
+    },
+    "remediation_action": {
+      "type": "object",
+      "required": ["id", "priority", "owner", "target", "category", "reason", "related_finding_ids", "related_gap_ids", "source"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "priority": {"$ref": "#/$defs/offline_priority"},
+        "owner": {"type": "string"},
+        "target": {"type": "string"},
+        "category": {"type": "string"},
+        "reason": {"type": "string"},
+        "suggested_next_command": {"type": "string"},
+        "requested_evidence": {"type": "string"},
+        "related_finding_ids": {"$ref": "#/$defs/string_list"},
+        "related_gap_ids": {"$ref": "#/$defs/string_list"},
+        "source": {"type": "string"}
+      }
+    },
+    "node_type": {
+      "type": "string",
+      "enum": [
+        "agent",
+        "runtime",
+        "model",
+        "prompt",
+        "tool",
+        "mcp_server",
+        "api_operation",
+        "identity",
+        "permission",
+        "data_source",
+        "memory_store",
+        "input_source",
+        "external_sink",
+        "approval_policy",
+        "runtime_event",
+        "finding",
+        "unknown"
+      ]
+    },
+    "edge_type": {
+      "type": "string",
+      "enum": [
+        "agent_uses_tool",
+        "agent_runs_as_identity",
+        "tool_bound_to_identity",
+        "identity_has_permission",
+        "permission_reaches_data",
+        "tool_reads_data",
+        "tool_writes_data",
+        "tool_sends_external",
+        "tool_executes_command",
+        "tool_modifies_production",
+        "agent_receives_input",
+        "agent_has_memory",
+        "action_requires_approval",
+        "approval_missing",
+        "approval_present",
+        "event_observed",
+        "event_blocked",
+        "event_allowed",
+        "tool_defined_by_mcp_server",
+        "api_defines_tool",
+        "missing_evidence"
+      ]
+    },
+    "string_list": {"type": "array", "items": {"type": "string"}},
+    "offline_priority": {"type": "string", "enum": ["P1", "P2", "P3"]},
+    "offline_category": {
+      "type": "string",
+      "enum": [
+        "audit",
+        "change_control",
+        "data_protection",
+        "egress",
+        "financial_control",
+        "identity",
+        "policy",
+        "prompt_boundary",
+        "sandbox",
+        "secrets",
+        "tool_surface"
+      ]
+    },
+    "offline_control_name": {
+      "type": "string",
+      "enum": [
+        "amount_threshold",
+        "approval_required",
+        "audit_logging",
+        "change_ticket_required",
+        "command_allowlist",
+        "dlp_redaction",
+        "egress_allowlist",
+        "narrow_typed_tools",
+        "read_only_identity",
+        "resource_constraints",
+        "sandbox_control",
+        "scoped_identity",
+        "secret_denylist"
+      ]
+    },
+    "offline_control_list": {"type": "array", "items": {"$ref": "#/$defs/offline_control_name"}},
+    "offline_summary": {
+      "type": "object",
+      "required": [
+        "tools",
+        "dangerous_tools",
+        "generic_tools",
+        "agent_tool_controls",
+        "tools_missing_required_controls",
+        "policy_control_gaps",
+        "prompt_security_boundaries",
+        "prompt_boundary_risks",
+        "missing_audit_logging",
+        "required_control_instances",
+        "missing_control_instances",
+        "control_coverage_percent",
+        "roadmap_items"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "tools": {"type": "integer", "minimum": 0},
+        "dangerous_tools": {"type": "integer", "minimum": 0},
+        "generic_tools": {"type": "integer", "minimum": 0},
+        "agent_tool_controls": {"type": "integer", "minimum": 0},
+        "tools_missing_required_controls": {"type": "integer", "minimum": 0},
+        "policy_control_gaps": {"type": "integer", "minimum": 0},
+        "prompt_security_boundaries": {"type": "integer", "minimum": 0},
+        "prompt_boundary_risks": {"type": "integer", "minimum": 0},
+        "missing_audit_logging": {"type": "integer", "minimum": 0},
+        "required_control_instances": {"type": "integer", "minimum": 0},
+        "missing_control_instances": {"type": "integer", "minimum": 0},
+        "control_coverage_percent": {"type": "integer", "minimum": 0, "maximum": 100},
+        "roadmap_items": {"type": "integer", "minimum": 0}
+      }
+    },
+    "offline_tool_inventory_row": {
+      "type": "object",
+      "required": [
+        "tool",
+        "name",
+        "target_system",
+        "risk_tags",
+        "risk_source",
+        "risk_confidence",
+        "source_file",
+        "generic_tool",
+        "broad_reasons",
+        "required_controls"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "tool": {"type": "string"},
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "target_system": {"type": "string"},
+        "risk_tags": {"$ref": "#/$defs/string_list"},
+        "risk_source": {"type": "string"},
+        "risk_confidence": {"$ref": "#/$defs/confidence"},
+        "server_id": {"type": "string"},
+        "method": {"type": "string"},
+        "path": {"type": "string"},
+        "security_scopes": {"$ref": "#/$defs/string_list"},
+        "request_data_classes": {"$ref": "#/$defs/string_list"},
+        "response_data_classes": {"$ref": "#/$defs/string_list"},
+        "source_file": {"type": "string"},
+        "generic_tool": {"type": "boolean"},
+        "broad_reasons": {"$ref": "#/$defs/string_list"},
+        "required_controls": {"$ref": "#/$defs/offline_control_list"}
+      }
+    },
+    "offline_agent_tool_control_row": {
+      "type": "object",
+      "required": [
+        "agent",
+        "tool",
+        "target_system",
+        "risk_tags",
+        "required_controls",
+        "declared_controls",
+        "missing_required_controls",
+        "policy_decision",
+        "control_status",
+        "generic_tool"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "agent": {"type": "string"},
+        "tool": {"type": "string"},
+        "tool_name": {"type": "string"},
+        "target_system": {"type": "string"},
+        "risk_tags": {"$ref": "#/$defs/string_list"},
+        "risk_source": {"type": "string"},
+        "risk_confidence": {"$ref": "#/$defs/confidence"},
+        "source_file": {"type": "string"},
+        "required_controls": {"$ref": "#/$defs/offline_control_list"},
+        "declared_controls": {"$ref": "#/$defs/offline_control_list"},
+        "missing_required_controls": {"$ref": "#/$defs/offline_control_list"},
+        "policy_decision": {"type": "string", "enum": ["allow", "approval_required", "deny", "unknown"]},
+        "policy": {"type": "string"},
+        "policy_rule": {"type": "string"},
+        "policy_reason": {"type": "string"},
+        "policy_source_file": {"type": "string"},
+        "control_status": {"type": "string", "enum": ["complete", "missing_controls", "no_requirements"]},
+        "generic_tool": {"type": "boolean"},
+        "broad_reasons": {"$ref": "#/$defs/string_list"},
+        "owner": {"type": "string"},
+        "environment": {"type": "string"},
+        "runtime": {"type": "string"},
+        "approval_policy": {"type": "string"}
+      }
+    },
+    "offline_policy_control_gap": {
+      "type": "object",
+      "required": ["id", "type", "agent", "tool", "missing_controls", "reason", "requested_evidence"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"type": "string", "enum": ["offline_tool_control_gap"]},
+        "agent": {"type": "string"},
+        "tool": {"type": "string"},
+        "target_system": {"type": "string"},
+        "risk_tags": {"$ref": "#/$defs/string_list"},
+        "missing_controls": {"$ref": "#/$defs/offline_control_list"},
+        "reason": {"type": "string"},
+        "requested_evidence": {"type": "string"},
+        "source_file": {"type": "string"},
+        "policy_source_file": {"type": "string"}
+      }
+    },
+    "offline_prompt_security_boundary": {
+      "type": "object",
+      "required": ["agent", "fields", "matched_terms", "dangerous_tool_count", "reason"],
+      "additionalProperties": true,
+      "properties": {
+        "agent": {"type": "string"},
+        "fields": {"$ref": "#/$defs/string_list"},
+        "matched_terms": {"$ref": "#/$defs/string_list"},
+        "dangerous_tool_count": {"type": "integer", "minimum": 0},
+        "approval_policy": {"type": "string"},
+        "source_file": {"type": "string"},
+        "reason": {"type": "string"}
+      }
+    },
+    "offline_prompt_boundary_risk": {"$ref": "#/$defs/offline_prompt_security_boundary"},
+    "offline_roadmap_item": {
+      "type": "object",
+      "required": [
+        "id",
+        "priority",
+        "category",
+        "title",
+        "reason",
+        "affected_agents",
+        "affected_tools",
+        "affected_count",
+        "controls",
+        "evidence_needed",
+        "acceptance_criteria",
+        "source"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "priority": {"$ref": "#/$defs/offline_priority"},
+        "category": {"$ref": "#/$defs/offline_category"},
+        "title": {"type": "string"},
+        "reason": {"type": "string"},
+        "affected_agents": {"$ref": "#/$defs/string_list"},
+        "affected_tools": {"$ref": "#/$defs/string_list"},
+        "affected_count": {"type": "integer", "minimum": 0},
+        "controls": {"$ref": "#/$defs/offline_control_list"},
+        "evidence_needed": {"$ref": "#/$defs/string_list"},
+        "acceptance_criteria": {"$ref": "#/$defs/string_list"},
+        "source": {"type": "string", "enum": ["offline_policy", "offline_static"]}
+      }
+    },
+    "policy_rule_risk": {
+      "type": "object",
+      "required": [
+        "type",
+        "reason",
+        "repair"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "broad_allow_high_risk",
+            "policy_rule_shadowed",
+            "conflicting_matching_decisions",
+            "unmatched_policy_rule",
+            "ineffective_control_rule"
+          ]
+        },
+        "policy": {"type": "string"},
+        "rule": {"type": "string"},
+        "decision": {"type": "string", "enum": ["allow", "approval_required", "deny", "unknown"]},
+        "agent": {"type": "string"},
+        "tool": {"type": "string"},
+        "target_system": {"type": "string"},
+        "environment": {"type": "string"},
+        "risk_tags": {"$ref": "#/$defs/string_list"},
+        "effective_policy": {"type": "string"},
+        "effective_rule": {"type": "string"},
+        "effective_decision": {"type": "string", "enum": ["allow", "approval_required", "deny", "unknown"]},
+        "match_keys": {"$ref": "#/$defs/string_list"},
+        "matching_rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "policy": {"type": "string"},
+              "rule": {"type": "string"},
+              "decision": {"type": "string", "enum": ["allow", "approval_required", "deny", "unknown"]},
+              "match_keys": {"$ref": "#/$defs/string_list"}
+            }
+          }
+        },
+        "reason": {"type": "string"},
+        "repair": {"type": "string"},
+        "source_file": {"type": "string"},
+        "shadowed_rule": {"type": "string"},
+        "shadowed_decision": {"type": "string", "enum": ["allow", "approval_required", "deny", "unknown"]},
+        "declared_controls": {"$ref": "#/$defs/offline_control_list"},
+        "required_controls": {"$ref": "#/$defs/offline_control_list"}
+      }
+    },
+    "node": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "label",
+        "properties",
+        "source",
+        "confidence",
+        "evidence_layer",
+        "unknowns",
+        "visibility_gaps",
+        "recommended_next_evidence"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"$ref": "#/$defs/node_type"},
+        "label": {"type": "string"},
+        "properties": {"type": "object"},
+        "source": {"type": "string"},
+        "confidence": {"$ref": "#/$defs/confidence"},
+        "evidence_layer": {"type": "string"},
+        "unknowns": {"$ref": "#/$defs/string_list"},
+        "visibility_gaps": {"$ref": "#/$defs/string_list"},
+        "recommended_next_evidence": {"$ref": "#/$defs/string_list"}
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": [
+        "id",
+        "from_node",
+        "to_node",
+        "type",
+        "label",
+        "properties",
+        "source",
+        "confidence",
+        "evidence_layer",
+        "unknowns",
+        "blockers",
+        "visibility_gaps",
+        "recommended_next_evidence"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "from_node": {"type": "string"},
+        "to_node": {"type": "string"},
+        "type": {"$ref": "#/$defs/edge_type"},
+        "label": {"type": "string"},
+        "properties": {"type": "object"},
+        "source": {"type": "string"},
+        "confidence": {"$ref": "#/$defs/confidence"},
+        "evidence_layer": {"type": "string"},
+        "unknowns": {"$ref": "#/$defs/string_list"},
+        "blockers": {"$ref": "#/$defs/string_list"},
+        "visibility_gaps": {"$ref": "#/$defs/string_list"},
+        "recommended_next_evidence": {"$ref": "#/$defs/string_list"}
+      }
+    },
+    "attack_path": {
+      "type": "object",
+      "required": [
+        "id",
+        "rule_id",
+        "title",
+        "nodes",
+        "edges",
+        "evidence_summary",
+        "unknowns",
+        "blockers",
+        "score",
+        "tier",
+        "confidence",
+        "evidence_layer",
+        "observation_status",
+        "path_state",
+        "evidence_quality",
+        "runtime_observation",
+        "remediation",
+        "operational_context",
+        "risk_status",
+        "accepted_risk",
+        "recommendations",
+        "visibility_gaps",
+        "visibility_gap_priorities",
+        "recommended_next_evidence",
+        "scoring",
+        "raw_points",
+        "related_events"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "rule_id": {"type": "string"},
+        "title": {"type": "string"},
+        "nodes": {"$ref": "#/$defs/string_list"},
+        "edges": {"$ref": "#/$defs/string_list"},
+        "evidence_summary": {"$ref": "#/$defs/string_list"},
+        "unknowns": {"$ref": "#/$defs/string_list"},
+        "blockers": {"$ref": "#/$defs/string_list"},
+        "score": {"type": "integer", "minimum": 0},
+        "tier": {"$ref": "#/$defs/tier"},
+        "confidence": {"$ref": "#/$defs/confidence"},
+        "evidence_layer": {"type": "string"},
+        "observation_status": {"$ref": "#/$defs/observation_status"},
+        "path_state": {"$ref": "#/$defs/path_state"},
+        "evidence_quality": {"$ref": "#/$defs/evidence_quality"},
+        "runtime_observation": {"type": "object"},
+        "remediation": {"type": "object"},
+        "operational_context": {"type": "object"},
+        "risk_status": {"$ref": "#/$defs/risk_status"},
+        "accepted_risk": {"$ref": "#/$defs/accepted_risk"},
+        "recommendations": {"$ref": "#/$defs/string_list"},
+        "visibility_gaps": {"$ref": "#/$defs/string_list"},
+        "visibility_gap_priorities": {"$ref": "#/$defs/string_list"},
+        "recommended_next_evidence": {"$ref": "#/$defs/string_list"},
+        "related_events": {"$ref": "#/$defs/string_list"},
+        "raw_points": {"type": "integer", "minimum": 0},
+        "scoring": {
+          "type": "object",
+          "required": ["score", "tier", "dimensions", "caps", "controls"]
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "description",
+        "tier",
+        "score",
+        "confidence",
+        "evidence_layer",
+        "observation_status",
+        "path_state",
+        "evidence_quality",
+        "runtime_observation",
+        "remediation",
+        "operational_context",
+        "risk_status",
+        "accepted_risk",
+        "path",
+        "nodes",
+        "edges",
+        "evidence",
+        "unknowns",
+        "blockers",
+        "controls",
+        "recommendations",
+        "visibility_gaps",
+        "visibility_gap_priorities",
+        "recommended_next_evidence",
+        "source_files",
+        "related_events",
+        "scoring",
+        "raw_points"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
+        "description": {"type": "string"},
+        "type": {"type": "string"},
+        "rule_id": {"type": "string"},
+        "tier": {"$ref": "#/$defs/tier"},
+        "score": {"type": "integer", "minimum": 0},
+        "confidence": {"$ref": "#/$defs/confidence"},
+        "evidence_layer": {"type": "string"},
+        "observation_status": {"$ref": "#/$defs/observation_status"},
+        "path_state": {"$ref": "#/$defs/path_state"},
+        "evidence_quality": {"$ref": "#/$defs/evidence_quality"},
+        "runtime_observation": {"type": "object"},
+        "remediation": {"type": "object"},
+        "operational_context": {"type": "object"},
+        "risk_status": {"$ref": "#/$defs/risk_status"},
+        "accepted_risk": {"$ref": "#/$defs/accepted_risk"},
+        "path": {"$ref": "#/$defs/string_list"},
+        "nodes": {"$ref": "#/$defs/string_list"},
+        "edges": {"$ref": "#/$defs/string_list"},
+        "evidence": {"$ref": "#/$defs/string_list"},
+        "unknowns": {"$ref": "#/$defs/string_list"},
+        "blockers": {"$ref": "#/$defs/string_list"},
+        "controls": {"$ref": "#/$defs/string_list"},
+        "recommendations": {"$ref": "#/$defs/string_list"},
+        "visibility_gaps": {"$ref": "#/$defs/string_list"},
+        "visibility_gap_priorities": {"$ref": "#/$defs/string_list"},
+        "recommended_next_evidence": {"$ref": "#/$defs/string_list"},
+        "source_files": {"$ref": "#/$defs/string_list"},
+        "related_events": {"$ref": "#/$defs/string_list"},
+        "raw_points": {"type": "integer", "minimum": 0},
+        "scoring": {
+          "type": "object",
+          "required": ["score", "tier", "dimensions", "caps", "controls"]
+        }
+      }
+    }
+  }
+}

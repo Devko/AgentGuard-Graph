@@ -1,0 +1,41 @@
+name: Adapter fixture request
+description: Propose a sanitized admin export shape or evidence producer variant.
+title: "[adapter] "
+labels: ["adapter", "fixture"]
+body:
+  - type: dropdown
+    id: adapter
+    attributes:
+      label: Adapter or evidence source
+      options:
+        - GitHub App permissions
+        - Slack OAuth scopes
+        - Google OAuth scopes
+        - Salesforce permissions
+        - AWS IAM policy
+        - Kubernetes RBAC
+        - OpenAPI JSON
+        - MCP config
+        - LangChain/custom tool manifest
+        - Runtime events
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: shape
+    attributes:
+      label: Sanitized export shape
+      description: Paste a redacted example. Remove tokens, secrets, personal data, and customer content.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: expected_mapping
+    attributes:
+      label: Expected mapping
+      description: Describe expected AgentGuard tools, identities, permissions, data classes, or events.
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Include any quirks such as deny-only policies, partial exports, nested resources, or custom fields.

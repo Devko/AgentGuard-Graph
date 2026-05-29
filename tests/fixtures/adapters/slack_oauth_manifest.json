@@ -1,0 +1,18 @@
+{
+  "identity_id": "slack:ops-bot",
+  "display_information": {
+    "name": "Ops Bot"
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "chat:write",
+        "channels:read",
+        "files:read"
+      ],
+      "user": [
+        "users:read"
+      ]
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "schema_version": "0.1",
+  "data_sources": [
+    {
+      "id": "salesforce.Contact",
+      "name": "Salesforce Contact",
+      "target_system": "salesforce",
+      "data_classes": ["customer_pii"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "salesforce.Case",
+      "name": "Salesforce Case",
+      "target_system": "salesforce",
+      "data_classes": ["support_history", "customer_pii"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "support-vector-store",
+      "name": "Support Vector Store",
+      "data_classes": ["support_history", "customer_pii"],
+      "sensitivity": "medium",
+      "persistence": "persistent"
+    },
+    {
+      "id": "repo:*",
+      "name": "GitHub Repositories",
+      "target_system": "github",
+      "data_classes": ["source_code"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "secret_path_unknown",
+      "name": "Unclassified Local Secret-Like Paths",
+      "target_system": "local_workspace",
+      "data_classes": ["secrets"],
+      "sensitivity": "critical"
+    },
+    {
+      "id": "kubernetes.production",
+      "name": "Production Kubernetes Cluster",
+      "target_system": "kubernetes",
+      "data_classes": ["production_config", "secrets"],
+      "sensitivity": "critical"
+    },
+    {
+      "id": "aws.lambda.production",
+      "name": "Production Lambda Configuration",
+      "target_system": "aws",
+      "data_classes": ["production_config", "secrets"],
+      "sensitivity": "critical"
+    },
+    {
+      "id": "netsuite.Vendor",
+      "name": "NetSuite Vendor Profiles",
+      "target_system": "netsuite",
+      "data_classes": ["billing_data", "financial_data", "vendor_pii"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "netsuite.Payment",
+      "name": "NetSuite Payment Records",
+      "target_system": "netsuite",
+      "data_classes": ["billing_data", "financial_data"],
+      "sensitivity": "critical"
+    },
+    {
+      "id": "finance-case-memory",
+      "name": "Finance Case Memory",
+      "data_classes": ["billing_data", "financial_data"],
+      "sensitivity": "high",
+      "persistence": "persistent"
+    },
+    {
+      "id": "google.Drive",
+      "name": "Google Drive Shared Knowledge Base",
+      "target_system": "google_workspace",
+      "data_classes": ["employee_pii", "security_logs", "internal"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "knowledge-vector-store",
+      "name": "Knowledge Assistant Vector Store",
+      "data_classes": ["employee_pii", "security_logs", "internal"],
+      "sensitivity": "high",
+      "persistence": "persistent"
+    },
+    {
+      "id": "microsoft365.email",
+      "name": "Microsoft 365 Exchange Mailbox",
+      "target_system": "microsoft_365",
+      "data_classes": ["m365_mail_context", "sales_correspondence"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "microsoft365.graph_connector.sales_accounts",
+      "name": "Microsoft 365 Graph Connector Sales Account Knowledge",
+      "target_system": "microsoft_365",
+      "data_classes": ["customer_account_context", "sales_forecast"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "dataverse.Opportunity",
+      "name": "Dataverse Opportunity",
+      "target_system": "dataverse",
+      "data_classes": ["customer_account_context", "sales_discount_terms", "sales_forecast"],
+      "sensitivity": "critical"
+    },
+    {
+      "id": "dataverse.Account",
+      "name": "Dataverse Account",
+      "target_system": "dataverse",
+      "data_classes": ["customer_account_context"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "sales-copilot-memory",
+      "name": "Sales Copilot Conversation Memory",
+      "data_classes": ["customer_account_context", "sales_discount_terms", "sales_forecast"],
+      "sensitivity": "high",
+      "persistence": "persistent"
+    }
+  ]
+}

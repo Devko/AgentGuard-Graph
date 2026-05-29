@@ -1,0 +1,46 @@
+{
+  "runtime": "openclaw",
+  "environment": "production",
+  "tools": {
+    "fs": {
+      "enabled": true
+    }
+  },
+  "agents": {
+    "defaults": {
+      "tools": {
+        "browser": {
+          "enabled": true
+        }
+      }
+    },
+    "list": [
+      {
+        "id": "ops-remediation-agent",
+        "name": "Ops Remediation Agent",
+        "tools": {
+          "exec": {
+            "enabled": true
+          },
+          "github": {
+            "enabled": true
+          },
+          "allow": [
+            "pagerduty.create_incident"
+          ]
+        },
+        "input_sources": [
+          "incident_slack_channel"
+        ]
+      }
+    ]
+  },
+  "channels": {
+    "incident_slack_channel": {
+      "enabled": true
+    },
+    "internal_cron": {
+      "enabled": false
+    }
+  }
+}

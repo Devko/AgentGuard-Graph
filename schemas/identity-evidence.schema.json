@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.dev/schemas/identity-evidence.schema.json",
+  "title": "Identity evidence",
+  "type": "object",
+  "required": ["schema_version", "identities"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "identities": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/identity"}
+    }
+  },
+  "$defs": {
+    "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+    "identity": {
+      "type": "object",
+      "required": ["id", "type", "target_system"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "type": {"type": "string", "minLength": 1},
+        "target_system": {"type": "string", "minLength": 1},
+        "scopes": {"type": "array", "items": {"type": "string"}, "default": []},
+        "permissions": {"type": "array", "items": {"$ref": "#/$defs/permission"}, "default": []},
+        "confidence": {"$ref": "#/$defs/confidence"},
+        "raw_source": {}
+      }
+    },
+    "permission": {
+      "type": "object",
+      "required": ["resource", "actions"],
+      "additionalProperties": true,
+      "properties": {
+        "resource": {"type": "string", "minLength": 1},
+        "actions": {"type": "array", "items": {"type": "string"}},
+        "data_classes": {"type": "array", "items": {"type": "string"}, "default": []},
+        "confidence": {"$ref": "#/$defs/confidence"}
+      }
+    }
+  }
+}

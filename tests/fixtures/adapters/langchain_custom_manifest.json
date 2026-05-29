@@ -1,0 +1,58 @@
+{
+  "schema_version": "0.1",
+  "tools": [
+    {
+      "name": "github.create_pr",
+      "description": "Create a pull request in GitHub",
+      "target_system": "github",
+      "risk_tags": [
+        "repository_write",
+        "not_a_real_tag"
+      ],
+      "args_schema": {
+        "type": "object",
+        "properties": {
+          "branch": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "salesforce.get_contact",
+      "description": "Read Salesforce customer contact records"
+    },
+    "slack.post_message"
+  ],
+  "agents": [
+    {
+      "id": "ops-remediation-agent",
+      "name": "Ops Remediation Agent",
+      "tools": [
+        "github.create_pr",
+        "salesforce.get_contact",
+        "slack.post_message"
+      ],
+      "input_sources": [
+        "incident_slack_channel"
+      ],
+      "identities": [
+        "github:ops-review-app",
+        "slack:ops-bot",
+        "salesforce:support-profile"
+      ],
+      "autonomy": "approval_required",
+      "environment": "production"
+    }
+  ],
+  "input_sources": [
+    {
+      "id": "incident_slack_channel",
+      "trust": "untrusted",
+      "description": "External customer incident channel bridged into Slack"
+    }
+  ]
+}

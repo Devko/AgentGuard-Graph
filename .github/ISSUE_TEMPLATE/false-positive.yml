@@ -1,0 +1,48 @@
+name: False positive or severity calibration
+description: Report a finding that looks overstated, understated, or operationally unhelpful.
+title: "[finding] "
+labels: ["finding-calibration"]
+body:
+  - type: input
+    id: finding_id
+    attributes:
+      label: Finding id
+      placeholder: "finding-..."
+    validations:
+      required: true
+  - type: input
+    id: rule_id
+    attributes:
+      label: Rule id
+      placeholder: "untrusted_input_to_sensitive_data_to_external_sink"
+  - type: dropdown
+    id: calibration
+    attributes:
+      label: Calibration issue
+      options:
+        - False positive
+        - Severity too high
+        - Severity too low
+        - Evidence quality wrong
+        - Path state wrong
+        - Remediation unclear
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this looks wrong
+      description: Explain the missing context, control, permission boundary, or runtime evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: sanitized_report
+    attributes:
+      label: Sanitized report snippet
+      description: Include the smallest redacted JSON/Markdown/HTML excerpt needed to review the issue.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected wording or score
+      description: Describe the expected evidence quality, path state, score, tier, or remediation.

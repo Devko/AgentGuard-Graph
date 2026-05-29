@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "policies": [
+    {
+      "id": "support-policy",
+      "rules": [
+        {
+          "id": "external-pii-requires-approval",
+          "match": {
+            "action_class": "external_message",
+            "data_classes_any": ["customer_pii"]
+          },
+          "decision": "approval_required",
+          "reason": "External messages containing PII require approval"
+        }
+      ]
+    }
+  ]
+}

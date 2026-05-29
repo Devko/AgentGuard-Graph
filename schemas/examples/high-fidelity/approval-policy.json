@@ -1,0 +1,30 @@
+{
+  "schema_version": "0.1",
+  "policies": [
+    {
+      "id": "release-policy",
+      "rules": [
+        {
+          "id": "production-change-window",
+          "match": {
+            "action_class": "production_write",
+            "environment": "production"
+          },
+          "decision": "approval_required",
+          "controls": ["change_ticket", "sandbox_control", "audit_logging"],
+          "reason": "Production writes require change approval and audit logging"
+        },
+        {
+          "id": "deny-prod-delete",
+          "match": {
+            "tool": "kubernetes.apply_manifest",
+            "action": "delete"
+          },
+          "decision": "deny",
+          "controls": ["deny_rule"],
+          "reason": "Delete operations require a separate break-glass workflow"
+        }
+      ]
+    }
+  ]
+}

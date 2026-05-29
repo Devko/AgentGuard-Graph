@@ -1,0 +1,37 @@
+{
+  "Role": {
+    "RoleName": "agent-runtime-role",
+    "Arn": "arn:aws:iam::111122223333:role/agent-runtime-role"
+  },
+  "PolicyDocument": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "ReadSecrets",
+        "Effect": "Allow",
+        "Action": [
+          "secretsmanager:GetSecretValue",
+          "ssm:GetParameter"
+        ],
+        "Resource": [
+          "arn:aws:secretsmanager:us-east-1:111122223333:secret:agent/*"
+        ]
+      },
+      {
+        "Sid": "UpdateDeployments",
+        "Effect": "Allow",
+        "Action": [
+          "cloudformation:UpdateStack",
+          "lambda:UpdateFunctionCode"
+        ],
+        "Resource": "*"
+      },
+      {
+        "Sid": "DenyDeletion",
+        "Effect": "Deny",
+        "Action": "iam:DeleteRole",
+        "Resource": "*"
+      }
+    ]
+  }
+}

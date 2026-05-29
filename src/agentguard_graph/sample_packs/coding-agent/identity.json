@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1",
+  "identities": [
+    {
+      "id": "github:code-agent",
+      "type": "github_app",
+      "target_system": "github",
+      "permissions": [
+        {
+          "resource": "repo:*",
+          "actions": ["read", "write"],
+          "data_classes": ["source_code"],
+          "confidence": "high"
+        }
+      ]
+    }
+  ]
+}

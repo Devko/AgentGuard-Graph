@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "servers": [
+    {
+      "id": "minimal-mcp",
+      "name": "Minimal MCP",
+      "transport": "stdio",
+      "auth": "none",
+      "tools": [
+        {
+          "name": "docs.search",
+          "description": "Search internal documentation",
+          "risk_tags": ["read_action"],
+          "target_system": "docs"
+        }
+      ]
+    }
+  ]
+}

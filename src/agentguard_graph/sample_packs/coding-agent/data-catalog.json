@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "data_sources": [
+    {
+      "id": "repo:*",
+      "name": "GitHub repositories",
+      "target_system": "github",
+      "data_classes": ["source_code"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "secret_path_unknown",
+      "name": "Secret-like paths",
+      "target_system": "local_workspace",
+      "data_classes": ["secrets"],
+      "sensitivity": "critical"
+    }
+  ]
+}

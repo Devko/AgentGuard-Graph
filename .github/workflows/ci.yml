@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Enforce clean source checkout
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          forbidden = [
+              "build",
+              "dist",
+              "htmlcov",
+              "outputs",
+              ".coverage",
+              ".coverage-deps",
+              "covdeps",
+              ".wheels",
+          ]
+          offenders = [path for path in forbidden if Path(path).exists()]
+          offenders.extend(str(path) for path in Path(".").rglob("*.egg-info"))
+          offenders.extend(str(path) for path in Path(".").rglob("__pycache__"))
+          if offenders:
+              raise SystemExit("generated artifacts found in clean checkout: " + ", ".join(sorted(offenders)))
+          PY
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install package and dev tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Compile sources and tests
+        run: python -m compileall -q src tests
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Run coverage gate
+        run: |
+          coverage run --source=src/agentguard_graph -m unittest discover -s tests
+          coverage report -m --fail-under=85
+
+      - name: Build package artifacts
+        run: python -m build
+
+      - name: Run offline demo
+        run: agentguard-graph demo
+
+      - name: Validate demo report contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("outputs/demo/agent-risk.json").read_text(encoding="utf-8"))
+          html = Path("outputs/demo/agent-risk.html").read_text(encoding="utf-8")
+
+          assert report["summary"]["findings"] >= 1
+          assert report["summary"]["urgent"] + report["summary"]["high"] >= 1
+          assert not any(token in html for token in ("https://", "http://", "<script src=", "<link rel="))
+
+          node_ids = {node["id"] for node in report["graph"]["nodes"]}
+          edge_ids = {edge["id"] for edge in report["graph"]["edges"]}
+
+          for node in report["graph"]["nodes"]:
+              for key in ("evidence_layer", "visibility_gaps", "recommended_next_evidence"):
+                  assert key in node, (node["id"], key)
+
+          for edge in report["graph"]["edges"]:
+              for key in ("evidence_layer", "visibility_gaps", "recommended_next_evidence"):
+                  assert key in edge, (edge["id"], key)
+
+          for finding in report["findings"]:
+              assert finding["id"].startswith("finding-")
+              for key in ("evidence_layer", "visibility_gaps", "recommended_next_evidence", "nodes", "edges"):
+                  assert key in finding, (finding["id"], key)
+              assert all(node in node_ids for node in finding["nodes"])
+              assert all(edge in edge_ids for edge in finding["edges"])
+
+          for path in report["attack_paths"]:
+              assert path["id"].startswith("path-")
+              for key in ("evidence_layer", "visibility_gaps", "recommended_next_evidence", "nodes", "edges"):
+                  assert key in path, (path["id"], key)
+              assert all(node in node_ids for node in path["nodes"])
+              assert all(edge in edge_ids for edge in path["edges"])
+          PY

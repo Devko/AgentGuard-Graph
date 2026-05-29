@@ -1,0 +1,12 @@
+{
+  "schema_version": "0.1",
+  "data_sources": [
+    {
+      "id": "salesforce.Contact",
+      "name": "Salesforce Contact",
+      "target_system": "salesforce",
+      "data_classes": ["customer_pii"],
+      "sensitivity": "high"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1",
+  "servers": [
+    {
+      "id": "support-mcp",
+      "name": "Support MCP Server",
+      "transport": "stdio",
+      "auth": "unknown",
+      "tools": [
+        {
+          "name": "zendesk.read_ticket",
+          "description": "Read Zendesk support ticket content",
+          "risk_tags": ["read_action"],
+          "target_system": "zendesk"
+        },
+        {
+          "name": "salesforce.get_contact",
+          "description": "Read Salesforce Contact records",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "contact_id": {"type": "string"}
+            }
+          },
+          "risk_tags": ["sensitive_read"],
+          "target_system": "salesforce"
+        },
+        {
+          "name": "salesforce.get_cases",
+          "description": "Read Salesforce Case records",
+          "risk_tags": ["sensitive_read"],
+          "target_system": "salesforce"
+        },
+        {
+          "name": "gmail.send_email",
+          "description": "Send email to a recipient",
+          "input_schema": {
+            "type": "object",
+            "properties": {
+              "to": {"type": "string"},
+              "body": {"type": "string"}
+            }
+          },
+          "risk_tags": ["external_message", "data_exfiltration_sink"],
+          "target_system": "google_workspace"
+        },
+        {
+          "name": "stripe.create_refund",
+          "description": "Create a customer refund",
+          "risk_tags": ["financial_action", "write_action"],
+          "target_system": "stripe"
+        }
+      ]
+    }
+  ]
+}

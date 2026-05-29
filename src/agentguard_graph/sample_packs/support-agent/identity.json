@@ -1,0 +1,66 @@
+{
+  "schema_version": "0.1",
+  "identities": [
+    {
+      "id": "zendesk:support-agent",
+      "type": "oauth_client",
+      "target_system": "zendesk",
+      "scopes": ["tickets:read"],
+      "permissions": [
+        {
+          "resource": "zendesk.ticket",
+          "actions": ["read"],
+          "data_classes": ["zendesk_ticket_context"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "salesforce:support-agent-connected-app",
+      "type": "oauth_client",
+      "target_system": "salesforce",
+      "scopes": ["api", "refresh_token"],
+      "permissions": [
+        {
+          "resource": "salesforce.Contact",
+          "actions": ["read"],
+          "data_classes": ["customer_pii"],
+          "confidence": "high"
+        },
+        {
+          "resource": "salesforce.Case",
+          "actions": ["read"],
+          "data_classes": ["support_history", "customer_pii"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "google:gmail-support-agent",
+      "type": "oauth_client",
+      "target_system": "google_workspace",
+      "scopes": ["gmail.send"],
+      "permissions": [
+        {
+          "resource": "gmail.external_email",
+          "actions": ["send"],
+          "data_classes": [],
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "stripe:support-agent",
+      "type": "api_key",
+      "target_system": "stripe",
+      "permissions": [
+        {
+          "resource": "stripe.refund",
+          "actions": ["create"],
+          "data_classes": ["billing_data"],
+          "confidence": "medium"
+        }
+      ]
+    }
+  ]
+}

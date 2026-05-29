@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1",
+  "policies": [
+    {
+      "id": "support-agent-policy",
+      "rules": [
+        {
+          "id": "read-ticket-allowed",
+          "match": {
+            "action_class": "read_action"
+          },
+          "decision": "allow",
+          "reason": "Reading support tickets is allowed"
+        }
+      ]
+    }
+  ]
+}

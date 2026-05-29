@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.dev/schemas/agentguard.schema.json",
+  "title": "AgentGuard agent evidence",
+  "type": "object",
+  "required": ["schema_version", "agents"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "agents": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/agent"}
+    },
+    "input_sources": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/input_source"},
+      "default": []
+    },
+    "memory_stores": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/memory_store"},
+      "default": []
+    },
+    "tool_identity_bindings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/tool_identity_binding"},
+      "default": []
+    },
+    "risk_acceptances": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/risk_acceptance"},
+      "default": []
+    }
+  },
+  "$defs": {
+    "string_map": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    },
+    "agent": {
+      "type": "object",
+      "required": ["id", "tools", "identities", "input_sources", "autonomy"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string"},
+        "owner": {"type": "string"},
+        "runtime": {"type": "string"},
+        "environment": {
+          "type": "string",
+          "enum": ["production", "staging", "development", "local", "unknown"],
+          "default": "unknown"
+        },
+        "autonomy": {
+          "type": "string",
+          "enum": ["suggestion_only", "approval_required", "autonomous", "unknown"]
+        },
+        "input_sources": {"type": "array", "items": {"type": "string"}},
+        "tools": {"type": "array", "items": {"type": "string"}},
+        "identities": {"type": "array", "items": {"type": "string"}},
+        "tool_identity_bindings": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/tool_identity_binding"},
+          "default": []
+        },
+        "memory": {"type": "array", "items": {"type": "string"}, "default": []},
+        "approval_policy": {"type": "string"},
+        "labels": {"$ref": "#/$defs/string_map"}
+      }
+    },
+    "tool_identity_binding": {
+      "type": "object",
+      "required": ["tool", "identity"],
+      "additionalProperties": true,
+      "properties": {
+        "agent": {"type": "string"},
+        "tool": {"type": "string", "minLength": 1},
+        "identity": {"type": "string", "minLength": 1}
+      }
+    },
+    "input_source": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "trust": {"type": "string", "enum": ["trusted", "untrusted", "mixed", "unknown"], "default": "unknown"},
+        "description": {"type": "string"}
+      }
+    },
+    "risk_acceptance": {
+      "type": "object",
+      "required": ["id", "status", "scope"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "status": {"type": "string", "enum": ["accepted", "revoked"], "default": "accepted"},
+        "owner": {"type": "string"},
+        "accepted_by": {"type": "string"},
+        "reason": {"type": "string"},
+        "ticket": {"type": "string"},
+        "accepted_at": {"type": "string"},
+        "expires_at": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "accepted_until": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "scope": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "finding_id": {"type": "string"},
+            "path_id": {"type": "string"},
+            "rule_id": {"type": "string"},
+            "agent": {"type": "string"},
+            "owner": {"type": "string"},
+            "environment": {"type": "string"},
+            "business_unit": {"type": "string"}
+          }
+        }
+      }
+    },
+    "memory_store": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "persistence": {"type": "string", "enum": ["ephemeral", "session", "persistent", "unknown"], "default": "unknown"},
+        "retention_policy": {"type": "string", "default": "unknown"},
+        "owner": {"type": "string"},
+        "retention_period": {"type": "string"},
+        "deletion_policy": {"type": "string"},
+        "data_classes": {"type": "array", "items": {"type": "string"}, "default": []},
+        "source_evidence": {"type": "array", "items": {"type": "string"}, "default": []}
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+{"event_type":"agent.session_started","timestamp":"2026-05-17T10:00:00Z","agent":"support-agent","session_id":"support-1","input_source":"support_ticket","input_trust":"untrusted","confidence":"high"}
+{"event_type":"agent.tool_call","timestamp":"2026-05-17T10:00:05Z","agent":"support-agent","session_id":"support-1","tool":"salesforce.get_contact","action_class":"sensitive_read","data_classes":["customer_pii"],"identity":"salesforce:support-app","decision":"allow","confidence":"high"}

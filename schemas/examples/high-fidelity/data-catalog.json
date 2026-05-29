@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.1",
+  "data_sources": [
+    {
+      "id": "repo:release-service",
+      "name": "Release Service Repository",
+      "target_system": "github",
+      "data_classes": ["source_code"],
+      "sensitivity": "medium"
+    },
+    {
+      "id": "namespace:production",
+      "name": "Production Kubernetes Namespace",
+      "target_system": "kubernetes",
+      "data_classes": ["production_config"],
+      "sensitivity": "critical"
+    }
+  ]
+}

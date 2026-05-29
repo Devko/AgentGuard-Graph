@@ -1,0 +1,16 @@
+{
+  "slug": "ops-review-app",
+  "name": "Ops Review App",
+  "identity_id": "github:ops-review-app",
+  "default_permissions": {
+    "metadata": "read",
+    "contents": "write",
+    "pull_requests": "write",
+    "actions": "read",
+    "secrets": "read"
+  },
+  "default_events": [
+    "pull_request",
+    "workflow_run"
+  ]
+}

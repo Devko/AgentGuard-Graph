@@ -1,0 +1,76 @@
+{
+  "release_contract": "agentguard-graph-v1",
+  "product_version": "1.0.0",
+  "evidence_schema_version": "0.1",
+  "report_schema_version": "0.1",
+  "stability": "frozen",
+  "frozen_at": "2026-05-17",
+  "compatibility_note": "AgentGuard Graph 1.0 freezes the current local evidence contract while retaining schema_version 0.1 in evidence and report payloads for backward compatibility with existing packs.",
+  "schemas": [
+    {
+      "name": "agent evidence",
+      "path": "schemas/agentguard.schema.json",
+      "schema_version": "0.1",
+      "status": "frozen"
+    },
+    {
+      "name": "mcp evidence",
+      "path": "schemas/mcp-evidence.schema.json",
+      "schema_version": "0.1",
+      "status": "frozen"
+    },
+    {
+      "name": "identity evidence",
+      "path": "schemas/identity-evidence.schema.json",
+      "schema_version": "0.1",
+      "status": "frozen"
+    },
+    {
+      "name": "data catalog evidence",
+      "path": "schemas/data-catalog.schema.json",
+      "schema_version": "0.1",
+      "status": "frozen"
+    },
+    {
+      "name": "approval policy evidence",
+      "path": "schemas/approval-policy.schema.json",
+      "schema_version": "0.1",
+      "status": "frozen"
+    },
+    {
+      "name": "runtime event evidence",
+      "path": "schemas/agent-events.schema.json",
+      "schema_version": "0.1",
+      "status": "frozen"
+    },
+    {
+      "name": "report output",
+      "path": "schemas/findings.schema.json",
+      "schema_version": "0.1",
+      "status": "frozen"
+    }
+  ],
+  "stable_contracts": [
+    "CLI commands: scan, inventory, explain, compare, portfolio, validate, init, collect, doctor, demo",
+    "Doctor collection plan fields: actions, owner, file, target, reason, repair_text, exact_export, command, framework_checklists",
+    "Compare drift fields: evidence_manifest, remediation_plan, evidence manifest status/count deltas, remediation action/priority/owner/system/category deltas",
+    "Evidence manifest fields: schema_version, tool, generated_at, root, files, path, sha256, size_bytes, source_kind, schema_version",
+    "IAM analysis fields: summary, binding_coverage, unused_identities, unused_permissions, least_privilege_suggestions",
+    "Offline control analysis fields: summary, tool_inventory, generic_tools, agent_tool_controls, policy_control_gaps, prompt_security_boundaries, prompt_boundary_risks, roadmap",
+    "Policy analysis fields: summary, engines, evaluations, gaps, rule_risks; policy rule-risk types: broad_allow_high_risk, policy_rule_shadowed, conflicting_matching_decisions, unmatched_policy_rule, ineffective_control_rule",
+    "Policy evaluation import flags: --opa-policy, --rego-policy, --opa-eval, --cedar-policy, --cedar-eval",
+    "Privacy analysis fields: summary, data_exposures, classification_gaps, memory_retention, privacy_filters",
+    "Portfolio rollup fields: evidence-manifest status/drift counts and remediation action, priority, owner, system, and category rollups",
+    "Remediation plan fields: summary, owner_rollups, system_rollups, category_rollups, actions",
+    "Data classification import flags: --data-catalog-export, --dlp-export, --sensitivity-label-export, --table-classification-export",
+    "Runtime reconstruction fields: summary, event_quality, diagnostics, sessions, event_derived_paths, sessionless_events",
+    "Runtime import flags: --agent-trace-export, --approval-broker-export, --mcp-host-log, --ci-system-log, --cloud-audit-log",
+    "JSON report top-level fields required by schemas/findings.schema.json",
+    "Evidence quality labels: confirmed, supported, incomplete, weak",
+    "Path state labels: possible, supported, observed_partial, observed_full, observed_allowed, observed_blocked, unknown",
+    "Review decisions: block_launch, approve_with_conditions, needs_more_evidence, monitor_only, no_high_risk_paths_found",
+    "Accepted-risk statuses: open, accepted, acceptance_expired",
+    "Visibility gap priorities: critical_gap, high_gap, medium_gap, low_gap",
+    "Public score range: 0-100 with raw_points preserved for diagnostics"
+  ]
+}

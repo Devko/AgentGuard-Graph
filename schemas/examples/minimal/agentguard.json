@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.1",
+  "agents": [
+    {
+      "id": "minimal-agent",
+      "name": "Minimal Agent",
+      "owner": "example-team",
+      "runtime": "custom",
+      "environment": "development",
+      "autonomy": "approval_required",
+      "input_sources": ["developer_prompt"],
+      "tools": ["docs.search"],
+      "identities": [],
+      "memory": [],
+      "approval_policy": "minimal-policy"
+    }
+  ],
+  "input_sources": [
+    {
+      "id": "developer_prompt",
+      "trust": "trusted",
+      "description": "Prompt supplied by an internal developer"
+    }
+  ],
+  "memory_stores": []
+}

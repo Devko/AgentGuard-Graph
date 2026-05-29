@@ -1,0 +1,185 @@
+{
+  "schema_version": "0.1",
+  "servers": [
+    {
+      "id": "support-mcp",
+      "name": "Support Operations MCP Server",
+      "transport": "stdio",
+      "auth": "oauth_per_tool",
+      "tools": [
+        {
+          "name": "zendesk.read_ticket",
+          "description": "Read Zendesk support ticket content and metadata",
+          "risk_tags": ["read_action"],
+          "target_system": "zendesk"
+        },
+        {
+          "name": "salesforce.get_contact",
+          "description": "Read Salesforce Contact records by customer id or email",
+          "risk_tags": ["sensitive_read"],
+          "target_system": "salesforce"
+        },
+        {
+          "name": "salesforce.get_cases",
+          "description": "Read Salesforce Case history for the customer account",
+          "risk_tags": ["sensitive_read"],
+          "target_system": "salesforce"
+        },
+        {
+          "name": "gmail.send_email",
+          "description": "Send a customer support email to internal or external recipients",
+          "risk_tags": ["external_message", "data_exfiltration_sink"],
+          "target_system": "google_workspace"
+        },
+        {
+          "name": "stripe.create_refund",
+          "description": "Create a Stripe refund for a charge or payment intent",
+          "risk_tags": ["financial_action", "write_action"],
+          "target_system": "stripe"
+        }
+      ]
+    },
+    {
+      "id": "developer-mcp",
+      "name": "Developer Workspace MCP Server",
+      "transport": "stdio",
+      "auth": "local_user",
+      "tools": [
+        {
+          "name": "shell.run",
+          "description": "Run shell commands in a checked-out repository workspace",
+          "risk_tags": ["command_execution", "filesystem_write", "secret_access"],
+          "target_system": "local_workspace"
+        },
+        {
+          "name": "filesystem.read",
+          "description": "Read repository files and local workspace paths",
+          "risk_tags": ["filesystem_read", "secret_access"],
+          "target_system": "local_workspace"
+        },
+        {
+          "name": "github.create_pr",
+          "description": "Create or update a GitHub pull request",
+          "risk_tags": ["repository_write", "code_write", "external_message"],
+          "target_system": "github"
+        }
+      ]
+    },
+    {
+      "id": "release-mcp",
+      "name": "Release Automation MCP Server",
+      "transport": "stdio",
+      "auth": "service_account",
+      "tools": [
+        {
+          "name": "github.merge_pr",
+          "description": "Merge a release pull request into a protected branch",
+          "risk_tags": ["repository_write", "production_write", "code_write"],
+          "target_system": "github"
+        },
+        {
+          "name": "ci.trigger_deploy",
+          "description": "Trigger a deployment pipeline for a production service",
+          "risk_tags": ["ci_cd_write", "production_write"],
+          "target_system": "ci_cd"
+        },
+        {
+          "name": "kubernetes.apply_manifest",
+          "description": "Apply a Kubernetes manifest to a production namespace",
+          "risk_tags": ["infrastructure_write", "production_write", "destructive_action"],
+          "target_system": "kubernetes"
+        },
+        {
+          "name": "aws.update_lambda",
+          "description": "Update Lambda function configuration or code package",
+          "risk_tags": ["infrastructure_write", "production_write"],
+          "target_system": "aws"
+        }
+      ]
+    },
+    {
+      "id": "finance-mcp",
+      "name": "Finance Automation MCP Server",
+      "transport": "stdio",
+      "auth": "oauth_per_tool",
+      "tools": [
+        {
+          "name": "netsuite.get_vendor",
+          "description": "Read NetSuite vendor profile, tax, and payment metadata",
+          "risk_tags": ["sensitive_read"],
+          "target_system": "netsuite"
+        },
+        {
+          "name": "netsuite.create_vendor_payment",
+          "description": "Create a vendor payment proposal or payment record",
+          "risk_tags": ["financial_action", "sensitive_write", "write_action"],
+          "target_system": "netsuite"
+        },
+        {
+          "name": "slack.send_message",
+          "description": "Send a Slack message to a user or channel",
+          "risk_tags": ["external_message"],
+          "target_system": "slack"
+        }
+      ]
+    },
+    {
+      "id": "knowledge-mcp",
+      "name": "Enterprise Knowledge MCP Server",
+      "transport": "stdio",
+      "auth": "oauth_per_tool",
+      "tools": [
+        {
+          "name": "confluence.search",
+          "description": "Search Confluence pages, including internal runbooks and support notes",
+          "risk_tags": ["sensitive_read"],
+          "target_system": "confluence"
+        },
+        {
+          "name": "drive.search",
+          "description": "Search Google Drive documents shared with the knowledge assistant",
+          "risk_tags": ["sensitive_read"],
+          "target_system": "google_workspace"
+        }
+      ]
+    },
+    {
+      "id": "sales-copilot-mcp",
+      "name": "Microsoft 365 Copilot Sales Actions",
+      "transport": "copilot_plugin",
+      "auth": "user_delegated,oauthpluginvault",
+      "tools": [
+        {
+          "name": "copilot.Email.search",
+          "description": "Search email messages available to the Microsoft 365 Copilot user",
+          "risk_tags": ["read_action", "sensitive_read"],
+          "target_system": "microsoft_365"
+        },
+        {
+          "name": "copilot.GraphConnectors.search",
+          "description": "Search configured Microsoft 365 Graph Connector sales knowledge",
+          "risk_tags": ["read_action", "sensitive_read"],
+          "target_system": "microsoft_365"
+        },
+        {
+          "name": "dataverse.read_opportunity",
+          "description": "Read Dataverse opportunity, account, and contact fields for a sales deal",
+          "risk_tags": ["read_action", "sensitive_read"],
+          "target_system": "dataverse"
+        },
+        {
+          "name": "outlook.send_email",
+          "description": "Send an Outlook email to customer contacts with account or pricing context",
+          "risk_tags": ["external_message", "data_exfiltration_sink"],
+          "target_system": "microsoft_365"
+        },
+        {
+          "name": "powerplatform.create_discount_approval",
+          "description": "Create a Power Platform approval request for a customer discount exception",
+          "risk_tags": ["financial_action", "write_action"],
+          "target_system": "power_platform"
+        }
+      ]
+    }
+  ]
+}

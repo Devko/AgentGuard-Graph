@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1",
+  "servers": [
+    {
+      "id": "release-mcp",
+      "name": "Release MCP",
+      "transport": "stdio",
+      "auth": "workload_identity",
+      "tools": [
+        {
+          "name": "github.merge_pr",
+          "description": "Merge a GitHub pull request",
+          "risk_tags": ["repository_write", "write_action"],
+          "target_system": "github"
+        },
+        {
+          "name": "kubernetes.apply_manifest",
+          "description": "Apply Kubernetes manifests to production clusters",
+          "risk_tags": ["production_write", "write_action"],
+          "target_system": "kubernetes"
+        }
+      ]
+    }
+  ]
+}

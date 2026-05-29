@@ -1,0 +1,24 @@
+{
+  "identity_id": "salesforce:support-profile",
+  "profile": "Support Agent Integration",
+  "ObjectPermissions": [
+    {
+      "object": "Contact",
+      "PermissionsRead": true,
+      "PermissionsEdit": true
+    },
+    {
+      "object": "Case",
+      "PermissionsRead": true,
+      "PermissionsEdit": true,
+      "ViewAllRecords": true
+    },
+    {
+      "object": "Payment__c",
+      "PermissionsRead": true,
+      "data_classes": [
+        "financial_data"
+      ]
+    }
+  ]
+}

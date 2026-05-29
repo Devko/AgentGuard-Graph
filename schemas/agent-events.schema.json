@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.dev/schemas/agent-events.schema.json",
+  "title": "Agent runtime event",
+  "type": "object",
+  "required": ["event_type"],
+  "additionalProperties": true,
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "agent.session_started",
+        "agent.tool_call",
+        "agent.tool_result",
+        "agent.approval_requested",
+        "agent.approval_granted",
+        "agent.approval_denied",
+        "agent.policy_denied",
+        "agent.memory_read",
+        "agent.memory_write",
+        "agent.external_send",
+        "agent.delegation",
+        "agent.error"
+      ]
+    },
+    "timestamp": {"type": "string"},
+    "agent": {"type": "string"},
+    "session_id": {"type": "string"},
+    "delegated_by": {"type": "string"},
+    "input_source": {"type": "string"},
+    "input_trust": {"type": "string", "enum": ["trusted", "untrusted", "mixed", "unknown"]},
+    "tool": {"type": "string"},
+    "action_class": {"type": "string"},
+    "data_classes": {"type": "array", "items": {"type": "string"}},
+    "identity": {"type": "string"},
+    "target": {"type": "string"},
+    "decision": {"type": "string", "enum": ["allow", "allowed", "blocked", "deny", "denied", "approval_required", "unknown"]},
+    "policy": {"type": "string"},
+    "confidence": {"type": "string", "enum": ["high", "medium", "low"]}
+  }
+}

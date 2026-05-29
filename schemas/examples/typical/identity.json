@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1",
+  "identities": [
+    {
+      "id": "salesforce:support-app",
+      "type": "oauth_client",
+      "target_system": "salesforce",
+      "scopes": ["api"],
+      "permissions": [
+        {
+          "resource": "salesforce.Contact",
+          "actions": ["read"],
+          "data_classes": ["customer_pii"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "google:gmail-agent",
+      "type": "oauth_client",
+      "target_system": "google_workspace",
+      "scopes": ["gmail.send"],
+      "permissions": [
+        {
+          "resource": "gmail.external_email",
+          "actions": ["send"],
+          "data_classes": [],
+          "confidence": "medium"
+        }
+      ]
+    }
+  ]
+}

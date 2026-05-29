@@ -1,0 +1,228 @@
+{
+  "schema_version": "0.1",
+  "agents": [
+    {
+      "id": "support-triage-agent",
+      "name": "Support Triage Agent",
+      "owner": "support-platform",
+      "runtime": "custom-agent-platform",
+      "environment": "production",
+      "autonomy": "autonomous",
+      "input_sources": ["zendesk_ticket", "customer_email"],
+      "tools": [
+        "zendesk.read_ticket",
+        "salesforce.get_contact",
+        "salesforce.get_cases",
+        "gmail.send_email",
+        "stripe.create_refund"
+      ],
+      "identities": [
+        "zendesk:support-agent",
+        "salesforce:support-agent-connected-app",
+        "google:gmail-support-agent",
+        "stripe:support-agent"
+      ],
+      "memory": ["support-vector-store"],
+      "approval_policy": "support-agent-policy",
+      "labels": {
+        "business_unit": "customer_support",
+        "criticality": "high",
+        "demo_case": "customer_support_exfiltration"
+      }
+    },
+    {
+      "id": "coding-agent",
+      "name": "Repository Coding Agent",
+      "owner": "developer-platform",
+      "runtime": "claude-code-like",
+      "environment": "production",
+      "autonomy": "approval_required",
+      "input_sources": ["pull_request_comment", "repository_content"],
+      "tools": ["shell.run", "filesystem.read", "github.create_pr"],
+      "identities": ["github:code-agent"],
+      "memory": [],
+      "approval_policy": "coding-agent-policy",
+      "labels": {
+        "business_unit": "engineering",
+        "criticality": "high",
+        "demo_case": "untrusted_code_change"
+      }
+    },
+    {
+      "id": "release-orchestrator-agent",
+      "name": "Release Orchestrator Agent",
+      "owner": "platform-operations",
+      "runtime": "langgraph",
+      "environment": "production",
+      "autonomy": "autonomous",
+      "input_sources": ["slack_release_request", "deployment_ticket"],
+      "tools": ["github.merge_pr", "ci.trigger_deploy", "kubernetes.apply_manifest", "aws.update_lambda"],
+      "identities": ["github:release-agent", "kubernetes:release-runner", "aws:release-role"],
+      "memory": [],
+      "approval_policy": "release-agent-policy",
+      "labels": {
+        "business_unit": "platform",
+        "criticality": "critical",
+        "demo_case": "production_change_control"
+      }
+    },
+    {
+      "id": "finance-ops-agent",
+      "name": "Finance Operations Agent",
+      "owner": "finance-automation",
+      "runtime": "custom-agent-platform",
+      "environment": "production",
+      "autonomy": "autonomous",
+      "input_sources": ["vendor_invoice_email", "shared_drive_invoice"],
+      "tools": ["netsuite.get_vendor", "netsuite.create_vendor_payment", "slack.send_message"],
+      "identities": ["netsuite:finance-agent", "slack:finance-agent"],
+      "memory": ["finance-case-memory"],
+      "approval_policy": "finance-agent-policy",
+      "labels": {
+        "business_unit": "finance",
+        "criticality": "critical",
+        "demo_case": "financial_action_and_observed_block"
+      }
+    },
+    {
+      "id": "knowledge-assistant-agent",
+      "name": "Knowledge Assistant Agent",
+      "owner": "enterprise-knowledge",
+      "runtime": "langchain",
+      "environment": "production",
+      "autonomy": "suggestion_only",
+      "input_sources": ["internal_chat", "uploaded_research_doc"],
+      "tools": ["confluence.search", "drive.search", "slack.send_message"],
+      "identities": ["google:knowledge-agent", "slack:knowledge-agent"],
+      "memory": ["knowledge-vector-store"],
+      "approval_policy": "knowledge-agent-policy",
+      "labels": {
+        "business_unit": "enterprise_knowledge",
+        "criticality": "medium",
+        "demo_case": "memory_and_iam_visibility"
+      }
+    },
+    {
+      "id": "sales-copilot-agent",
+      "name": "Sales Copilot Agent",
+      "owner": "revenue-operations",
+      "runtime": "microsoft-365-copilot",
+      "environment": "production",
+      "autonomy": "approval_required",
+      "input_sources": ["microsoft_365_copilot_prompt", "teams_customer_thread", "dataverse_opportunity_record"],
+      "tools": [
+        "copilot.Email.search",
+        "copilot.GraphConnectors.search",
+        "dataverse.read_opportunity",
+        "outlook.send_email",
+        "powerplatform.create_discount_approval"
+      ],
+      "identities": [
+        "microsoft365:user-delegated",
+        "dataverse:sales-copilot-agent",
+        "powerplatform:sales-copilot-agent"
+      ],
+      "memory": ["sales-copilot-memory"],
+      "approval_policy": "sales-copilot-policy",
+      "labels": {
+        "business_unit": "revenue_operations",
+        "criticality": "high",
+        "platform": "microsoft_365_copilot",
+        "demo_case": "copilot_delegated_access_and_approvals"
+      }
+    }
+  ],
+  "input_sources": [
+    {
+      "id": "zendesk_ticket",
+      "trust": "untrusted",
+      "description": "Customer-controlled support ticket content"
+    },
+    {
+      "id": "customer_email",
+      "trust": "untrusted",
+      "description": "Customer-controlled support email"
+    },
+    {
+      "id": "pull_request_comment",
+      "trust": "untrusted",
+      "description": "External contributor or user-supplied pull request comments"
+    },
+    {
+      "id": "repository_content",
+      "trust": "untrusted",
+      "description": "Repository files and instructions introduced by pull requests"
+    },
+    {
+      "id": "slack_release_request",
+      "trust": "mixed",
+      "description": "Release requests posted by employees and automation in Slack"
+    },
+    {
+      "id": "deployment_ticket",
+      "trust": "trusted",
+      "description": "Change-management ticket created by the release team"
+    },
+    {
+      "id": "vendor_invoice_email",
+      "trust": "untrusted",
+      "description": "Vendor-controlled invoice email content"
+    },
+    {
+      "id": "shared_drive_invoice",
+      "trust": "mixed",
+      "description": "Invoice attachments saved by finance staff"
+    },
+    {
+      "id": "internal_chat",
+      "trust": "mixed",
+      "description": "Employee chat messages"
+    },
+    {
+      "id": "uploaded_research_doc",
+      "trust": "untrusted",
+      "description": "Documents uploaded by employees or external partners"
+    },
+    {
+      "id": "microsoft_365_copilot_prompt",
+      "trust": "untrusted",
+      "description": "End-user prompt submitted to a Microsoft 365 Copilot declarative agent"
+    },
+    {
+      "id": "teams_customer_thread",
+      "trust": "mixed",
+      "description": "Customer account context pasted or referenced from Microsoft Teams"
+    },
+    {
+      "id": "dataverse_opportunity_record",
+      "trust": "trusted",
+      "description": "CRM opportunity data retrieved from Dataverse"
+    }
+  ],
+  "memory_stores": [
+    {
+      "id": "support-vector-store",
+      "persistence": "persistent",
+      "retention_policy": "unknown",
+      "data_classes": ["support_history", "customer_pii"]
+    },
+    {
+      "id": "finance-case-memory",
+      "persistence": "persistent",
+      "retention_policy": "90_days",
+      "data_classes": ["billing_data", "financial_data"]
+    },
+    {
+      "id": "knowledge-vector-store",
+      "persistence": "persistent",
+      "retention_policy": "unknown",
+      "data_classes": ["employee_pii", "security_logs", "internal"]
+    },
+    {
+      "id": "sales-copilot-memory",
+      "persistence": "persistent",
+      "retention_policy": "30_days",
+      "data_classes": ["customer_account_context", "sales_discount_terms", "sales_forecast"]
+    }
+  ]
+}

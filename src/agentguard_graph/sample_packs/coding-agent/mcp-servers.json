@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.1",
+  "servers": [
+    {
+      "id": "coding-mcp",
+      "name": "Coding MCP Server",
+      "transport": "stdio",
+      "auth": "unknown",
+      "tools": [
+        {
+          "name": "shell.run",
+          "description": "Run shell commands in a workspace and access filesystem paths",
+          "risk_tags": ["command_execution", "filesystem_write", "secret_access"],
+          "target_system": "local_workspace"
+        },
+        {
+          "name": "github.create_pr",
+          "description": "Create a pull request in GitHub",
+          "risk_tags": ["repository_write", "code_write"],
+          "target_system": "github"
+        },
+        {
+          "name": "filesystem.read",
+          "description": "Read repository files",
+          "risk_tags": ["filesystem_read"],
+          "target_system": "local_workspace"
+        }
+      ]
+    }
+  ]
+}

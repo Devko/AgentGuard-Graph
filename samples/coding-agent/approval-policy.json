@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1",
+  "policies": [
+    {
+      "id": "coding-agent-policy",
+      "rules": [
+        {
+          "id": "command-execution-requires-approval",
+          "match": {
+            "risk_tag": "command_execution"
+          },
+          "decision": "approval_required",
+          "reason": "Shell command execution requires user approval"
+        }
+      ]
+    }
+  ]
+}

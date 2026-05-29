@@ -1,0 +1,1 @@
+{"event_type":"agent.tool_call","timestamp":"2026-05-17T11:00:00Z","agent":"coding-agent","session_id":"c1","input_source":"pull_request_comment","input_trust":"untrusted","tool":"shell.run","action_class":"command_execution","decision":"allow","confidence":"high"}

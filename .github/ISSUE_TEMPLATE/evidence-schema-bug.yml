@@ -1,0 +1,46 @@
+name: Evidence schema bug
+description: Report a problem with an AgentGuard Graph evidence schema, example, or validator behavior.
+title: "[schema] "
+labels: ["schema", "bug"]
+body:
+  - type: dropdown
+    id: evidence_file
+    attributes:
+      label: Evidence file
+      options:
+        - agentguard.json
+        - mcp-servers.json
+        - identity.json
+        - data-catalog.json
+        - approval-policy.json
+        - events.jsonl
+        - openapi
+        - report JSON
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: Include the validation warning/error or report field that looks wrong. Redact secrets and customer data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe the schema or validator behavior you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: sanitized_evidence
+    attributes:
+      label: Sanitized evidence snippet
+      description: Paste the smallest redacted evidence snippet that reproduces the issue.
+      render: json
+  - type: input
+    id: version
+    attributes:
+      label: AgentGuard Graph version
+      placeholder: "0.1.0"

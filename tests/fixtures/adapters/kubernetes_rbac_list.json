@@ -1,0 +1,64 @@
+{
+  "kind": "List",
+  "items": [
+    {
+      "kind": "ClusterRole",
+      "metadata": {
+        "name": "agent-secret-reader"
+      },
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resources": [
+            "secrets"
+          ],
+          "verbs": [
+            "get",
+            "list"
+          ]
+        },
+        {
+          "apiGroups": [
+            "apps"
+          ],
+          "resources": [
+            "deployments"
+          ],
+          "verbs": [
+            "patch"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "Role",
+      "metadata": {
+        "name": "namespace-log-reader",
+        "namespace": "support"
+      },
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "resources": [
+            "events",
+            "pods"
+          ],
+          "verbs": [
+            "get",
+            "watch"
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "ignored-binding"
+      }
+    }
+  ]
+}

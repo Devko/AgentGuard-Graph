@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentguard-graph"
+version = "1.0.0"
+description = "Local-first read-only agent security graph and attack-path analyzer."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "AgentGuard Graph Contributors"}]
+keywords = ["agent-security", "attack-path", "ai-agents", "mcp", "security-graph"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Security",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "coverage>=7.0",
+]
+
+[project.scripts]
+agentguard-graph = "agentguard_graph.cli:main"
+agg = "agentguard_graph.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+agentguard_graph = ["sample_packs/*/*.json", "sample_packs/*/*.jsonl"]
+
+[tool.coverage.run]
+branch = true
+source = ["src/agentguard_graph"]
+
+[tool.coverage.report]
+show_missing = true

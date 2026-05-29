@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentguard.dev/schemas/approval-policy.schema.json",
+  "title": "Approval policy evidence",
+  "type": "object",
+  "required": ["schema_version", "policies"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "policies": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/policy"}
+    },
+    "policy_evaluations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/policy_evaluation"}
+    }
+  },
+  "$defs": {
+    "policy": {
+      "type": "object",
+      "required": ["id", "rules"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "engine": {"type": "string", "enum": ["", "opa_rego", "cedar"]},
+        "rules": {"type": "array", "items": {"$ref": "#/$defs/rule"}}
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": ["id", "match", "decision"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "match": {"$ref": "#/$defs/match"},
+        "decision": {"type": "string", "enum": ["allow", "approval_required", "deny", "unknown"]},
+        "reason": {"type": "string"},
+        "policy_engine": {"type": "string", "enum": ["", "opa_rego", "cedar"]},
+        "evaluation_id": {"type": "string"},
+        "controls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "sandbox_control",
+              "egress_allowlist",
+              "scoped_identity",
+              "read_only_identity",
+              "command_allowlist",
+              "secret_denylist",
+              "amount_threshold",
+              "audit_logging",
+              "change_ticket_required",
+              "dlp_redaction"
+            ]
+          }
+        }
+      }
+    },
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "action_class": {"type": ["string", "array"], "items": {"type": "string"}},
+        "risk_tag": {"type": ["string", "array"], "items": {"type": "string"}},
+        "data_classes_any": {"type": "array", "items": {"type": "string"}},
+        "target_system": {"type": ["string", "array"], "items": {"type": "string"}},
+        "environment": {"type": ["string", "array"], "items": {"type": "string"}},
+        "tool": {"type": ["string", "array"], "items": {"type": "string"}},
+        "agent": {"type": ["string", "array"], "items": {"type": "string"}},
+        "external_target": {"type": ["string", "array"], "items": {"type": "string"}}
+      }
+    },
+    "policy_evaluation": {
+      "type": "object",
+      "required": ["id", "engine", "decision", "match"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "engine": {"type": "string", "enum": ["opa_rego", "cedar"]},
+        "policy": {"type": "string"},
+        "query": {"type": "string"},
+        "path": {"type": "string"},
+        "package": {"type": "string"},
+        "decision": {"type": "string", "enum": ["allow", "approval_required", "deny", "unknown"]},
+        "match": {"$ref": "#/$defs/match"},
+        "reason": {"type": "string"},
+        "controls": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        "source_file": {"type": "string"}
+      }
+    }
+  }
+}

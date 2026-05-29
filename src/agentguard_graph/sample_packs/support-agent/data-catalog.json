@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.1",
+  "data_sources": [
+    {
+      "id": "salesforce.Contact",
+      "name": "Salesforce Contact",
+      "target_system": "salesforce",
+      "data_classes": ["customer_pii"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "salesforce.Case",
+      "name": "Salesforce Case",
+      "target_system": "salesforce",
+      "data_classes": ["support_history", "customer_pii"],
+      "sensitivity": "high"
+    },
+    {
+      "id": "support-vector-store",
+      "name": "Support Vector Store",
+      "data_classes": ["support_history", "customer_pii"],
+      "sensitivity": "medium",
+      "persistence": "persistent"
+    }
+  ]
+}

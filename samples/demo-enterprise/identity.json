@@ -1,0 +1,189 @@
+{
+  "schema_version": "0.1",
+  "identities": [
+    {
+      "id": "zendesk:support-agent",
+      "type": "oauth_client",
+      "target_system": "zendesk",
+      "scopes": ["tickets:read"],
+      "permissions": [
+        {
+          "resource": "zendesk.ticket",
+          "actions": ["read"],
+          "data_classes": ["zendesk_ticket_context"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "salesforce:support-agent-connected-app",
+      "type": "oauth_client",
+      "target_system": "salesforce",
+      "scopes": ["api", "refresh_token"],
+      "permissions": [
+        {
+          "resource": "salesforce.Contact",
+          "actions": ["read"],
+          "data_classes": ["customer_pii"],
+          "confidence": "high"
+        },
+        {
+          "resource": "salesforce.Case",
+          "actions": ["read"],
+          "data_classes": ["support_history", "customer_pii"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "google:gmail-support-agent",
+      "type": "oauth_client",
+      "target_system": "google_workspace",
+      "scopes": ["gmail.send"],
+      "permissions": [
+        {
+          "resource": "gmail.external_email",
+          "actions": ["send"],
+          "data_classes": [],
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "stripe:support-agent",
+      "type": "api_key",
+      "target_system": "stripe",
+      "permissions": [
+        {
+          "resource": "stripe.refund",
+          "actions": ["create"],
+          "data_classes": ["billing_data"],
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "github:code-agent",
+      "type": "github_app",
+      "target_system": "github",
+      "permissions": [
+        {
+          "resource": "repo:*",
+          "actions": ["read", "write"],
+          "data_classes": ["source_code"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "github:release-agent",
+      "type": "github_app",
+      "target_system": "github",
+      "permissions": [
+        {
+          "resource": "repo:payments-service",
+          "actions": ["read", "write"],
+          "data_classes": ["source_code", "production_config"],
+          "confidence": "high"
+        }
+      ]
+    },
+    {
+      "id": "kubernetes:release-runner",
+      "type": "service_account",
+      "target_system": "kubernetes",
+      "permissions": []
+    },
+    {
+      "id": "aws:release-role",
+      "type": "aws_iam_role",
+      "target_system": "aws",
+      "permissions": []
+    },
+    {
+      "id": "netsuite:finance-agent",
+      "type": "oauth_client",
+      "target_system": "netsuite",
+      "scopes": ["vendor.read", "payment.create"],
+      "permissions": [
+        {
+          "resource": "netsuite.Vendor",
+          "actions": ["read"],
+          "data_classes": ["billing_data", "financial_data", "vendor_pii"],
+          "confidence": "medium"
+        },
+        {
+          "resource": "netsuite.Payment",
+          "actions": ["create"],
+          "data_classes": ["billing_data", "financial_data"],
+          "confidence": "medium"
+        }
+      ]
+    },
+    {
+      "id": "slack:finance-agent",
+      "type": "oauth_client",
+      "target_system": "slack",
+      "scopes": ["chat:write"],
+      "permissions": []
+    },
+    {
+      "id": "google:knowledge-agent",
+      "type": "oauth_client",
+      "target_system": "google_workspace",
+      "scopes": ["drive.metadata.readonly"],
+      "permissions": []
+    },
+    {
+      "id": "slack:knowledge-agent",
+      "type": "oauth_client",
+      "target_system": "slack",
+      "scopes": ["chat:write"],
+      "permissions": []
+    },
+    {
+      "id": "microsoft365:user-delegated",
+      "type": "user_delegated",
+      "target_system": "microsoft_365",
+      "scopes": ["Mail.Read", "User.Read", "GraphConnectors.Read.All"],
+      "permissions": [],
+      "confidence": "low"
+    },
+    {
+      "id": "dataverse:sales-copilot-agent",
+      "type": "oauth_client",
+      "target_system": "dataverse",
+      "scopes": ["user_impersonation"],
+      "permissions": [
+        {
+          "resource": "dataverse.Opportunity",
+          "actions": ["read"],
+          "data_classes": ["customer_account_context", "sales_discount_terms", "sales_forecast"],
+          "confidence": "medium"
+        },
+        {
+          "resource": "dataverse.Account",
+          "actions": ["read"],
+          "data_classes": ["customer_account_context"],
+          "confidence": "medium"
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "powerplatform:sales-copilot-agent",
+      "type": "oauth_client",
+      "target_system": "power_platform",
+      "scopes": ["Approvals.ReadWrite.All"],
+      "permissions": [
+        {
+          "resource": "powerplatform.Approvals",
+          "actions": ["create"],
+          "data_classes": ["sales_discount_terms"],
+          "confidence": "medium"
+        }
+      ],
+      "confidence": "medium"
+    }
+  ]
+}

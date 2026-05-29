@@ -1,0 +1,53 @@
+{
+  "schema_version": "0.1",
+  "agents": [
+    {
+      "id": "support-triage-agent",
+      "name": "Support Triage Agent",
+      "owner": "support-platform",
+      "runtime": "custom-agent-platform",
+      "environment": "production",
+      "autonomy": "autonomous",
+      "input_sources": ["zendesk_ticket", "customer_email"],
+      "tools": [
+        "zendesk.read_ticket",
+        "salesforce.get_contact",
+        "salesforce.get_cases",
+        "gmail.send_email",
+        "stripe.create_refund"
+      ],
+      "identities": [
+        "zendesk:support-agent",
+        "salesforce:support-agent-connected-app",
+        "google:gmail-support-agent",
+        "stripe:support-agent"
+      ],
+      "memory": ["support-vector-store"],
+      "approval_policy": "support-agent-policy",
+      "labels": {
+        "business_unit": "customer_support",
+        "criticality": "high"
+      }
+    }
+  ],
+  "input_sources": [
+    {
+      "id": "zendesk_ticket",
+      "trust": "untrusted",
+      "description": "Customer-controlled support ticket content"
+    },
+    {
+      "id": "customer_email",
+      "trust": "untrusted",
+      "description": "Customer-controlled email content"
+    }
+  ],
+  "memory_stores": [
+    {
+      "id": "support-vector-store",
+      "persistence": "persistent",
+      "retention_policy": "unknown",
+      "data_classes": ["support_history", "customer_pii"]
+    }
+  ]
+}

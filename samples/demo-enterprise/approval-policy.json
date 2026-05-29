@@ -1,0 +1,106 @@
+{
+  "schema_version": "0.1",
+  "policies": [
+    {
+      "id": "support-agent-policy",
+      "rules": [
+        {
+          "id": "read-ticket-allowed",
+          "match": {
+            "action_class": "read_action"
+          },
+          "decision": "allow",
+          "reason": "Reading support tickets is allowed for triage."
+        }
+      ]
+    },
+    {
+      "id": "coding-agent-policy",
+      "rules": [
+        {
+          "id": "shell-requires-approval",
+          "match": {
+            "risk_tag": "command_execution"
+          },
+          "decision": "approval_required",
+          "controls": ["sandbox_control", "command_allowlist", "secret_denylist"],
+          "reason": "Shell execution requires user approval and runs in a restricted workspace."
+        }
+      ]
+    },
+    {
+      "id": "release-agent-policy",
+      "rules": [
+        {
+          "id": "read-release-ticket-allowed",
+          "match": {
+            "tool": "github.merge_pr",
+            "environment": "staging"
+          },
+          "decision": "allow",
+          "reason": "This staging-only rule does not match the production release agent."
+        }
+      ]
+    },
+    {
+      "id": "finance-agent-policy",
+      "rules": [
+        {
+          "id": "finance-slack-updates-allowed",
+          "match": {
+            "tool": "slack.send_message"
+          },
+          "decision": "allow",
+          "controls": ["audit_logging"],
+          "reason": "Finance status updates to Slack are logged."
+        }
+      ]
+    },
+    {
+      "id": "knowledge-agent-policy",
+      "rules": [
+        {
+          "id": "knowledge-search-read-only",
+          "match": {
+            "risk_tag": "sensitive_read"
+          },
+          "decision": "allow",
+          "controls": ["read_only_identity"],
+          "reason": "Knowledge search is read-only, but IAM export is still required to verify scope."
+        }
+      ]
+    },
+    {
+      "id": "sales-copilot-policy",
+      "rules": [
+        {
+          "id": "sales-copilot-read-allowed",
+          "match": {
+            "risk_tag": "sensitive_read"
+          },
+          "decision": "allow",
+          "controls": ["read_only_identity", "audit_logging"],
+          "reason": "Sales Copilot may read CRM and Microsoft 365 context when the identity scope is verified."
+        },
+        {
+          "id": "customer-email-requires-approval",
+          "match": {
+            "action_class": "external_message"
+          },
+          "decision": "approval_required",
+          "controls": ["dlp_redaction", "egress_allowlist", "audit_logging"],
+          "reason": "Customer emails containing CRM context require DLP checks and manager approval."
+        },
+        {
+          "id": "discount-exception-requires-approval",
+          "match": {
+            "action_class": "financial_action"
+          },
+          "decision": "approval_required",
+          "controls": ["amount_threshold", "audit_logging"],
+          "reason": "Discount exceptions require finance approval and threshold validation."
+        }
+      ]
+    }
+  ]
+}
